@@ -1,0 +1,211 @@
+PROGRAM
+
+	INITIAL
+! Initial values blah
+constant M0 = 1.75e6
+constant DC0 = 4.5e5 
+constant NK0 = 340
+constant N0 = 6e5
+constant Mono0 = 5e5
+MonoBlood0 = Mono0
+MonoBloodTissue0 = Mono0
+
+constant LuSA = 500 ! cm^2 for mouse (RDDR, EPA)
+
+! Cytokine
+constant P50_anti_inflammatory = 100
+constant P50_inflammatory = 20
+
+! Natural killer cell
+constant krecNK = 0.005        ! basal recruitment, replication/cell division 
+constant krecNK_inflammatory = 0.03
+constant kdegNK = 0.005
+constant kdegNK_anti_inflammatory = 0.04
+
+! Neutrophil
+constant krecN = 0.02              ! basal recruitment, replication/cell division 
+constant krecN_inflammatory = 0.12
+constant P50_IC_N = 80
+!constant kdegN_anti_inflammatory = 250
+constant kdegN = 0.02
+constant kAreaN = 2e-13            ! cm*cm/hr
+!constant tau_PN_N = 50
+
+! Pathogens engulfed by neutrophils
+!constant kdeathPN = 0.001
+constant kLysN = 10
+constant P50Lys = 10
+constant kRep = 0.693
+
+! Pathogens engulfed by macrophage
+constant kdeathPM = 0.05
+constant kLys = 10
+
+! Pathogens engulfed by dendritic cells
+constant kLysDC = 10
+
+! Monocytes in tissue
+constant kdegMono = 0                 ! Based on half-life
+kdiffMonoM = 1/24/2                   ! 1/time for a monoctye to differentiate into macrophage (t Mono/M)
+kdiffMonoDC = 1/24/2                  ! 1/time for a monoctye to differentiate into dendritic cell (t Mono/DC)
+
+! Monoctyes in blood
+krecMonoBlood = 1/24                  ! 1/time for a monocyte to migrate
+constant kdegMonoBlood = 0
+kmigMonoBlood = krecMonoBlood
+constant kmigMonoBlood_inflammatory = 0.1      ! Increase in influx
+
+! Macrophage
+constant kdegM = 0
+kmigM = kdiffMonoM*Mono0/M0     ! Must be balanced in steady state
+constant Mvel = 0.02                     ! cm/hr (Stober et al., 1989)
+constant MDiam = 15.0e-4                 ! mac diameter (cm)
+constant CHEMOI = .5 ! 0.25e2                 ! chemotactic index (fit, unitless)
+constant kdegMax = 0.01
+constant tau_PM_M = 100
+
+! Dendritic cell
+constant kdegDC = 0
+constant kAreaDC = 0.0001
+kmigDC = kdiffMonoDC*Mono0/DC0     ! Must be balanced in steady state
+constant kmigDC_inflammatory = 0.02
+constant tau_inflammatory_cytokine_DC = 50
+
+	END ! INITIAL
+
+
+	DYNAMIC
+
+		ALGORITHM IALG = 5
+		NSTEPS    NSTP = 10
+		MAXTERVAL MAXT = 1.0e9
+		MINTERVAL MINT = 1.0e-9
+		CINTERVAL CINT = 0.1
+
+ 		DERIVATIVE
+TABLE P_experimental, 1, 3 / 0,24,72,0,1e6,1e8 /
+
+rhoP = P_experimental(T)/LuSA  ! surface density of pathogen (num/cm**2)	
+
+TABLE inflammatory_cytokine_tbl, 1, 5 / 0,6,24,72,120,32.7,32.7,32.6,193.6,37.9 /
+IC = inflammatory_cytokine_tbl(T) - inflammatory_cytokine_tbl(0)
+TABLE anti_inflammatory_cytokine_tbl, 1, 5 / 0,6,24,72,120,300,326.6,304.2,459.7,387.3 /
+AIC = anti_inflammatory_cytokine_tbl(T) - anti_inflammatory_cytokine_tbl(0)
+
+PTot = P + PM + PN + PDC
+PperM = PM/M
+PperDC = PDC/DC
+PperN = PN/N
+
+!--------------------------------------------------------------------------
+! Dendritic cells
+RdeathDC = kdegDC*DC !kdegDC*DCDelayed
+RmigDC = (kmigDC + kmigDC_inflammatory*(1-exp(-PDC/max(DC,1)/tau_inflammatory_cytokine_DC)))*DC  !PDC/DCDelayed implies that all P in DC are in older (delayed) DCs.
+RrecDC = kdiffMonoDC*Mono !kdiffMonoDC*MonoDelayed
+RDC = RrecDC - RmigDC - RdeathDC
+DC = integ(RDC,DC0)
+
+!--------------------------------------------------------------------------
+! Macrophage
+RdeathM = (kdegM + kdegMax*(1-exp(-PM/max(M,1)/tau_PM_M)))*M
+RmigM = kmigM*M !Delayed
+RrecM = kdiffMonoM*Mono !Delayed
+RM = RrecM - RmigM - RdeathM
+M = integ(RM,M0)
+
+!--------------------------------------------------------------------------
+! Neutrophils
+! Cell surface receptors allow neutrophils to detect chemical gradients of cytokines
+RrecN = (krecN + krecN_inflammatory*IC/(P50_IC_N + IC))*N0
+RdeathN = kdegN*N
+RinfN = RPhN*(N/(N+NP))*N ! Compute the fraction of pathogens being engulfed by non-infected
+N = integ(-RdeathN + RrecN - RinfN,N0)
+
+!--------------------------------------------------------------------------
+! Neutrophil infected by pathogen
+RdeathNP = kdegN*NP
+NP = integ(RinfN - RdeathNP,0)
+
+!--------------------------------------------------------------------------
+! Pathogen engulfed by Neutrophil (N)
+RPhN = rhoP*kAreaN*CHEMOI*(NP+N) ! Units: P/s ... pathogens engulfed/s
+RLysN = kLysN*PN ! Destroyed by infected neutrophil
+! Ignore this for now - Paul
+! RRepPN = kRep*PN ! Replicating inside the neutrophil
+! RRelN = RdeathN*PN/N
+! When an infected neutrophil dies, I'm assuming it is engulfed by macrophage (i.e., it does not release P)
+PN = integ(RPhN - RLysN - RdeathNP*PN/max(NP,1),0) 
+
+!--------------------------------------------------------------------------
+! PATHOGEN engulfed by MACROPHAGE (PM)
+RPhM = rhoP*M*CHEMOI*Mvel*MDiam ! encounter rate (P/t)
+RLys = kLys*min(M,PM)/(PM/max(M,1)+P50Lys)  ! min(M,PM) is estimate of the number of M that have engulfed P.
+RRepPM = kRep*PM
+RRelM = RdeathM*PM/M  ! Released from death of M
+PM = integ(RPhM - RLys + RRepPM - RRelM,0)
+
+!--------------------------------------------------------------------------
+! Pathogen engulfed by Dendritic (DC)
+RPhDC = rhoP*kAreaDC*CHEMOI*DC
+RLysDC = kLysDC*min(PDC,M)/(PDC/max(DC,1)+P50Lys)
+RRepPDC = kRep*PDC
+RMigPDC = RmigDC*PDC/DC  ! migrating out with the DCs
+PDC = integ(RPhDC - RLysDC + RRepPDC - RMigPDC,0)
+
+!--------------------------------------------------------------------------
+! MONOCYTE in blood (MonoBlood)
+RrecMonoBlood = krecMonoBlood*MonoBlood0
+RdeathMonoBlood = kdegMonoBlood*MonoBlood
+RmigMonoBlood = kmigMonoBlood*MonoBlood + kmigMonoBlood_inflammatory*MonoBlood*IC/(P50_inflammatory + IC)
+RMonoBlood = RrecMonoBlood - RdeathMonoBlood - RmigMonoBlood
+MonoBlood = integ(RMonoBlood,MonoBlood0)
+
+!--------------------------------------------------------------------------
+! MONOCYTE in between blood and tissue (MonoBloodTissue)
+RMonoBloodTissue = RmigMonoBlood - RmigMonoBlood/MonoBlood*MonoBloodTissue ! By dividing by the MonoBlood we get a rate constant
+MonoBloodTissue = integ(RMonoBloodTissue,MonoBloodTissue0)
+
+!--------------------------------------------------------------------------
+! MONOCYTE in tissue (Mono)
+RdiffMono = kdiffMonoDC*Mono + kdiffMonoM*Mono
+RrecMono = RmigMonoBlood/MonoBlood*MonoBloodTissue ! By dividing by the MonoBlood we get a rate constant
+RdeathMono = kdegMono*Mono
+RMono = RrecMono - RdiffMono - RdeathMono
+Mono = integ(RMono,Mono0)
+
+!--------------------------------------------------------------------------
+! Natural killer cells
+RdeathNK = kdegNK*NK + kdegNK_anti_inflammatory*AIC/(P50_anti_inflammatory + AIC)*NK
+RrecNK = krecNK*NK + krecNK_inflammatory*IC/(P50_inflammatory + IC)*NK
+NK = integ(RrecNK - RdeathNK,NK0)
+
+!--------------------------------------------------------------------------
+! Pathogen
+RPh = RPhM + RPhN + RPhDC  !+ RPhAT2
+RPKillNK = 0
+RPKillCTL = 0
+RPKill = RPKillNK + RPKillCTL
+RRelease = RRelM !+ RRelN
+RP = - RPh - RPKill + RRelease
+P = integ(RP,0)
+
+		END ! DERIVATIVE
+
+	
+		! Add discrete events here as needed
+		!  DISCRETE
+		!  END
+
+		! code that is executed once at each communication interval goes here
+
+		CONSTANT TSTOP = 10.0
+		TERMT (T .GE. TSTOP, 'checked on communication interval: REACHED TSTOP')
+
+	END ! DYNAMIC
+
+
+	TERMINAL
+		! code that is executed once at the end of a simulation run goes here
+	END ! TERMINAL
+
+END ! PROGRAM

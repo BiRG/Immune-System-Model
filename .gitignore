@@ -1,0 +1,9 @@
+# List to ignore
+*.log
+*.apj
+*.dll
+*.rrr
+*.ail
+*.cpp
+*.csi
+*.obj

@@ -1,0 +1,12 @@
+load('hall_simulation_results')
+t = results(:,1);
+m = results(:,2);
+dc = results(:,3);
+nk = results(:,4);
+mono = results(:,5);
+monoblood = results(:,6);
+rhop = results(:,7);
+
+
+www.w
+plot(t,m);
