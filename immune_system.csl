@@ -1,7 +1,7 @@
 PROGRAM
 
 	INITIAL
-! Initial values blah
+! Initial values blah blah
 constant M0 = 1.75e6
 constant DC0 = 4.5e5 
 constant NK0 = 340
