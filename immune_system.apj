@@ -1,6 +1,7 @@
 <project>
   <csl name="immune_system.csl" location="." />
   <mscript name="hall.m" location="." />
+  <mscript name="woolard.m" location="." />
   <exe name="immune_system.dll" location="." />
   <resultsfolder name="" location="." />
 </project>
