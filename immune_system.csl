@@ -1,6 +1,8 @@
 PROGRAM
 
 	INITIAL
+constant SIMULATION = 1 ! Hall by default
+
 ! Initial values blah
 constant M0 = 1.75e6
 constant DC0 = 4.5e5 
@@ -84,12 +86,22 @@ constant P50_rhoP_DC = 1500
 		CINTERVAL CINT = 0.1
 
  		DERIVATIVE
-TABLE P_experimental, 1, 3 / 0,24,72,0,1e6,1e8 /
 
-rhoP = P_experimental(T)/LuSA  ! surface density of pathogen (num/cm**2)	
+TABLE P_experimental_tbl_hall, 1, 3 / 0,24,72,0,1e6,1e8 / ! Hall
+TABLE P_experimental_tbl_woolard, 1, 6 / 0,24,72,168,240,336,0,2204.365,81366.88,902036.3,1271972,786.1808 /
+TABLE inflammatory_cytokine_tbl_hall, 1, 5 / 0,6,24,72,120,0,32.7,32.6,193.6,37.9 / ! Sharma IFN-gamma
+TABLE inflammatory_cytokine_tbl_woolard, 1, 6 / 0,6,24,72,120,350,0,32.7,32.6,193.6,37.9,37.9 / ! Modified Sharma IFN-gamma
 
-TABLE inflammatory_cytokine_tbl, 1, 5 / 0,6,24,72,120,0,32.7,32.6,193.6,37.9 /
-IC = inflammatory_cytokine_tbl(T) - inflammatory_cytokine_tbl(0)
+IF (SIMULATION .EQ. 1) THEN ! Hall
+  P_experimental = P_experimental_tbl_hall(T) 
+  IC = inflammatory_cytokine_tbl_hall(T) - inflammatory_cytokine_tbl_hall(0)
+ELSE IF (SIMULATION .EQ. 2) THEN ! Woolard
+  P_experimental = P_experimental_tbl_woolard(T)
+  IC = inflammatory_cytokine_tbl_woolard(T) - inflammatory_cytokine_tbl_woolard(0)
+END IF
+
+rhoP = P_experimental/LuSA  ! surface density of pathogen (num/cm**2)	
+
 TABLE anti_inflammatory_cytokine_tbl, 1, 5 / 0,6,24,72,120,300,326.6,304.2,459.7,387.3 /
 AIC = anti_inflammatory_cytokine_tbl(T) - anti_inflammatory_cytokine_tbl(0)
 
@@ -186,7 +198,7 @@ Mono = integ(RMono,Mono0)
 !--------------------------------------------------------------------------
 ! Natural killer cells
 RdeathNK = kdegNK*NK + kdegNK_anti_inflammatory*AIC/(P50_anti_inflammatory + AIC)*NK
-RrecNK = krecNK*NK + krecNK_inflammatory*IC/(P50_IC_NK + IC)*NK
+RrecNK = krecNK*NK0 + krecNK_inflammatory*IC/(P50_IC_NK + IC)*NK
 NK = integ(RrecNK - RdeathNK,NK0)
 
 !--------------------------------------------------------------------------
