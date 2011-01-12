@@ -15,15 +15,21 @@ np = results(:,10);
 ic = results(:,11);
 aic = results(:,12);
 dca = results(:,13);
+mp = results(:,14);
+ifng = results(:,15);
 
 figure(1);
 subplot(3,2,1);
-plot(t,m,'k');
+plot(t,m+mp,'k');
 title('Machrophage');
 exp_inx = find(strcmp(componentNames,'M'));
 hold on
 errorbar(time,values(:,exp_inx),(maxvalues(:,exp_inx)-minvalues(:,exp_inx))/2,'color','b');
+exp_inx = find(strcmp(componentNames,'M_infected'));
+plot(t,mp,'r');
+plot(time,values(:,exp_inx),'-*b');
 hold off
+legend('M','Exp M','MP','Exp MP');
 
 subplot(3,2,2);
 plot(t,dc+dca,'k');
@@ -66,6 +72,9 @@ plot(t,rhop,'k');
 title('rho P');
 
 subplot(3,2,6);
-plot(t,ic,'k',t,aic,'b');
+plot(t,ifng,'k');
+hold on
+plot(t,ic,'-b');
+hold off
 title('Cytokines');
-legend('Inflammatory','Anti');
+legend('IFNG','Exp Inflammatory');

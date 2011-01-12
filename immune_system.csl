@@ -60,12 +60,18 @@ constant kmigMonoBlood_inflammatory = 0.1      ! Increase in influx
 
 ! Macrophage
 constant kdegM = 0
-kmigM = kdiffMonoM*Mono0/M0     				! Must be balanced in steady state
+kmigM = kdiffMonoM*Mono0/M0      				! Must be balanced in steady state
+kmigMP = 30*kmigM
 constant Mvel = 0.02                     ! cm/hr (Stober et al., 1989)
 constant MDiam = 15.0e-4                 ! mac diameter (cm)
-constant CHEMOI = .5 ! 0.25e2                 ! chemotactic index (fit, unitless)
+constant CHEMOI = 8e-8 ! 0.25e2            ! chemotactic index (fit, unitless)
 constant kdegMax = 0.01
-constant tau_PM_M = 100
+!constant tau_PM_M = 100
+constant P50_rhoP_M = 1500
+
+! IFN-gamma
+constant kgenINFG_MP = 0.01 ! IFGN/M/s
+constant kdegIFNG = 10
 
 ! Dendritic cell
 kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		! must be in steady state
@@ -159,20 +165,32 @@ RLysN = kLysN*PN ! Destroyed by infected neutrophil
 PN = integ(RPhN - RLysN - RdeathNP*PN/max(NP,1),0) 
 
 !--------------------------------------------------------------------------
+! PATHOGEN engulfed by MACROPHAGE (PM)
+RPhM = 2*P50_rhoP_M*(1-exp(-rhoP/(10*P50_rhoP_M)))*(M + MP)*CHEMOI*Mvel*MDiam ! encounter rate (P/t)
+RLys = kLys*PM !min(M,PM)/(PM/max(M,1)+P50Lys)  ! min(M,PM) is estimate of the number of M that have engulfed P.
+! Ignored for now
+!RRepPM = kRep*PM
+!RRelM = RdeathM*PM/M  ! Released from death of M
+PM = integ(RPhM - RLys,0)
+
+!--------------------------------------------------------------------------
 ! Macrophage
-RdeathM = (kdegM + kdegMax*(1-exp(-PM/max(M,1)/tau_PM_M)))*M
-RmigM = kmigM*M !Delayed
-RrecM = kdiffMonoM*Mono !Delayed
-RM = RrecM - RmigM - RdeathM
+RdeathM = kdegM*M
+RmigM = kmigM*M
+RrecM = kdiffMonoM*Mono
+RinfM = RPhM*(M/(M+MP))*M ! Compute the fraction of pathogens being engulfed by non-infected
+RM = RrecM - RmigM - RdeathM - RinfM
 M = integ(RM,M0)
 
 !--------------------------------------------------------------------------
-! PATHOGEN engulfed by MACROPHAGE (PM)
-RPhM = rhoP*M*CHEMOI*Mvel*MDiam ! encounter rate (P/t)
-RLys = kLys*min(M,PM)/(PM/max(M,1)+P50Lys)  ! min(M,PM) is estimate of the number of M that have engulfed P.
-RRepPM = kRep*PM
-RRelM = RdeathM*PM/M  ! Released from death of M
-PM = integ(RPhM - RLys + RRepPM - RRelM,0)
+! Macrophage infected by pathogen
+RdeathMP = (kdegM + kdegMax*(1-exp(-PM/max(M,1)/tau_PM_M)))*MP
+RmigMP = kmigMP*MP
+MP = integ(RinfM - RdeathMP - RmigMP,0)
+
+!--------------------------------------------------------------------------
+! IFN-gamma
+IFNG = integ(kgenINFG_MP*MP - kdegIFNG*IFNG,0)
 
 !--------------------------------------------------------------------------
 ! MONOCYTE in blood (MonoBlood)
