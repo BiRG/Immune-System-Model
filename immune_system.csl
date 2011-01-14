@@ -48,6 +48,7 @@ constant kLys = 10
 constant kLysDC = 10
 
 ! Monocytes in tissue
+! check Goto 2003, Tacke and Randolf 2006 for Mn turnover info - ceh
 constant kdegMono = 0               ! Based on half-life
 kdiffMonoM = 0.02                   ! 1/time for a monoctye to differentiate into macrophage (t Mono/M)
 kdiffMonoDC = 0.02                  ! 1/time for a monoctye to differentiate into dendritic cell (t Mono/DC)
