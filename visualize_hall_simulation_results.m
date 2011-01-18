@@ -1,6 +1,9 @@
 data = SBmeasurement('Hall data for sbtoolbox.xls')
 [time,componentNames,values,minvalues,maxvalues] = SBmeasurementdata(data);
 
+sharma_data = SBmeasurement('Sharma data for sbtoolbox.xls')
+[sharma_time,sharma_componentNames,sharma_values,sharma_minvalues,sharma_maxvalues] = SBmeasurementdata(sharma_data{2}); % 2 is the WT
+
 load('hall_simulation_results')
 t = results(:,1);
 m = results(:,2);
@@ -17,6 +20,7 @@ aic = results(:,12);
 dca = results(:,13);
 mp = results(:,14);
 ifng = results(:,15);
+il1a = results(:,16);
 
 figure(1);
 subplot(3,2,1);
@@ -72,9 +76,13 @@ plot(t,rhop,'k');
 title('rho P');
 
 subplot(3,2,6);
-plot(t,ifng,'k');
+hs = plot(t,ifng,t,il1a);
 hold on
-plot(t,ic,'-b');
+exp_inxs = [];
+exp_inxs(end+1) = find(strcmp(sharma_componentNames,'IFNG'));
+exp_inxs(end+1) = find(strcmp(sharma_componentNames,'IL1A'));
+exp_hs = plot(repmat(sharma_time,1,length(exp_inxs)),sharma_values(:,exp_inxs));
+set(exp_hs,'marker','*');
 hold off
 title('Cytokines');
-legend('IFNG','Exp Inflammatory');
+legend([hs;exp_hs],{'IFNG','IL1','Exp IFNG','Exp IL1A'});

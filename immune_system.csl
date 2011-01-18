@@ -48,7 +48,6 @@ constant kLys = 10
 constant kLysDC = 10
 
 ! Monocytes in tissue
-! check Goto 2003, Tacke and Randolf 2006 for Mn turnover info - ceh
 constant kdegMono = 0               ! Based on half-life
 kdiffMonoM = 0.02                   ! 1/time for a monoctye to differentiate into macrophage (t Mono/M)
 kdiffMonoDC = 0.02                  ! 1/time for a monoctye to differentiate into dendritic cell (t Mono/DC)
@@ -74,6 +73,14 @@ constant P50_rhoP_M = 1500
 constant kgenINFG_MP = 0.01 ! IFGN/M/s
 constant kdegIFNG = 10
 
+! IL-1A
+constant kgenIL1A_MP = 0.1 ! IL-1A/M/s
+constant kdegIL1A = 1
+
+! IL-12
+constant kgenIL1A_MP = 0.1 ! IL-12/M/s
+constant kdegIL12 = 1
+
 ! Dendritic cell
 kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		! must be in steady state
 constant kAreaDC = 5e-5
@@ -96,7 +103,7 @@ constant P50_rhoP_DC = 1500
 
 TABLE P_experimental_tbl_hall, 1, 3 / 0,24,72,0,1e6,1e8 / ! Hall
 TABLE P_experimental_tbl_woolard, 1, 6 / 0,24,72,168,240,336,0,2204.365,81366.88,902036.3,1271972,786.1808 /
-TABLE inflammatory_cytokine_tbl_hall, 1, 5 / 0,6,24,72,120,0,32.7,32.6,193.6,37.9 / ! Sharma IFN-gamma
+TABLE inflammatory_cytokine_tbl_hall, 1, 5 / 0,6,24,72,120,0,32.7,32.6,838.3,171.2 / ! Sharma IFN-gamma
 TABLE inflammatory_cytokine_tbl_woolard, 1, 6 / 0,6,24,72,120,350,0,32.7,32.6,193.6,37.9,37.9 / ! Modified Sharma IFN-gamma
 
 IF (SIMULATION .EQ. 1) THEN ! Hall
@@ -192,6 +199,10 @@ MP = integ(RinfM - RdeathMP - RmigMP,0)
 !--------------------------------------------------------------------------
 ! IFN-gamma
 IFNG = integ(kgenINFG_MP*MP - kdegIFNG*IFNG,0)
+
+!--------------------------------------------------------------------------
+! IL-1 alpha
+IL1A = integ(kgenIL1A_MP*MP - kdegIL1A*IL1A,0)
 
 !--------------------------------------------------------------------------
 ! MONOCYTE in blood (MonoBlood)
