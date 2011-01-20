@@ -21,6 +21,7 @@ dca = results(:,13);
 mp = results(:,14);
 ifng = results(:,15);
 il1a = results(:,16);
+il12 = results(:,17);
 
 figure(1);
 subplot(3,2,1);
@@ -76,7 +77,8 @@ plot(t,rhop,'k');
 title('rho P');
 
 subplot(3,2,6);
-hs = plot(t,ifng,t,il1a);
+hs = [];
+% hs = plot(t,ifng,t,il1a);
 hold on
 exp_inxs = [];
 exp_inxs(end+1) = find(strcmp(sharma_componentNames,'IFNG'));

@@ -78,7 +78,7 @@ constant kgenIL1A_MP = 0.1 ! IL-1A/M/s
 constant kdegIL1A = 1
 
 ! IL-12
-constant kgenIL1A_MP = 0.1 ! IL-12/M/s
+constant kgenIL12_MP = 0.1 ! IL-12/M/s
 constant kdegIL12 = 1
 
 ! Dendritic cell
@@ -203,6 +203,10 @@ IFNG = integ(kgenINFG_MP*MP - kdegIFNG*IFNG,0)
 !--------------------------------------------------------------------------
 ! IL-1 alpha
 IL1A = integ(kgenIL1A_MP*MP - kdegIL1A*IL1A,0)
+
+!--------------------------------------------------------------------------
+! IL12
+IL12 = integ(kgenIL12_MP*MP - kdegIL12*IL12,0)
 
 !--------------------------------------------------------------------------
 ! MONOCYTE in blood (MonoBlood)
