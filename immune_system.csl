@@ -106,6 +106,13 @@ TABLE P_experimental_tbl_woolard, 1, 6 / 0,24,72,168,240,336,0,2204.365,81366.88
 TABLE inflammatory_cytokine_tbl_hall, 1, 5 / 0,6,24,72,120,0,32.7,32.6,838.3,171.2 / ! Sharma IFN-gamma
 TABLE inflammatory_cytokine_tbl_woolard, 1, 6 / 0,6,24,72,120,350,0,32.7,32.6,193.6,37.9,37.9 / ! Modified Sharma IFN-gamma
 
+TABLE MCP1_tbl_hall, 1, 5 / 0,6,24,72,120,49,78,71,17270,28683 / ! Sharma - monocyte recruitment
+TABLE MCP3_tbl_hall, 1, 5 / 0,6,24,72,120,50,83,88,11630,16319 / ! Sharma - monocyte recruitment
+TABLE GROA_tbl_hall, 1, 5 / 0,6,24,72,120,28,60,211,4458.7,5205.4 / ! Sharma - neutrophil recruitment (surrogate for IL-8)
+TABLE IL1B_tbl_hall, 1, 5 / 0,6,24,72,120,952.3,1055,1357,6723.3,4064.7 / ! Sharma - NK recruitment
+TABLE IL18_tbl_hall, 1, 5 / 0,6,24,72,120,767.8,812,946.7,8283.3,14926.7 / ! Sharma - cytokine secreted by infected epithelial cells acting on NK cells (surrogate for IFN-alpha and -beta)
+TABLE IFNG_tbl_hall, 1, 5 / 0,6,24,72,120,7.8375,11.1,12.1,639.8,138.3 / ! Sharma - secreted by NK cells and it is a pro-inflammatory
+
 IF (SIMULATION .EQ. 1) THEN ! Hall
   P_experimental = P_experimental_tbl_hall(T) 
   IC = inflammatory_cytokine_tbl_hall(T) - inflammatory_cytokine_tbl_hall(0)
