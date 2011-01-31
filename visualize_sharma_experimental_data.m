@@ -1,5 +1,5 @@
 % addpath('kmedoids');
-data = SBmeasurement('Sharma data for sbtoolbox.xls')
+data = SBmeasurement('datasets/Sharma data for sbtoolbox.xls')
 data_mutant = data{1}; % Mutant
 data_WT = data{2}; % WT
 data_titles = {'Mutant','WT'};

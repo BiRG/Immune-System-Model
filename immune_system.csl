@@ -3,7 +3,7 @@ PROGRAM
 	INITIAL
 constant SIMULATION = 1 ! Hall by default
 
-! Initial values blah
+! Initial values
 constant M0 = 1.75e6
 constant DC0 = 4.5e5 
 constant NK0 = 340
@@ -11,19 +11,29 @@ constant N0 = 6e5
 constant Mono0 = 5e5
 MonoBlood0 = Mono0
 MonoBloodTissue0 = Mono0
+constant ATII0 = 2.5e6
 
 constant LuSA = 500 ! cm^2 for mouse (RDDR, EPA)
 
 ! Cytokine
 constant P50_anti_inflammatory = 100
 constant P50_IC_Mono = 20
+constant MAX_MCP1_Mono = 1000
+constant MAX_MCP3_Mono = 1000
 constant P50_IC_NK = 20
+constant P50_GROA_N = 100
+constant kgenMCP1_Mono = 0
+constant kgenMCP1_ATII = 1e-5
 
 ! Natural killer cell
 constant krecNK = 0.005        ! basal recruitment, replication/cell division 
 constant krecNK_inflammatory = 0.03
 constant kdegNK = 0.005
 constant kdegNK_anti_inflammatory = 0.04
+
+! ATII
+constant MAX_rhoP_ATII = 4000
+constant kAreaATII = 3.5e-15
 
 ! Neutrophil
 constant krecN = 0.02              ! basal recruitment, replication/cell division 
@@ -47,16 +57,21 @@ constant kLys = 10
 ! Pathogens engulfed by dendritic cells
 constant kLysDC = 10
 
+! Pathogens enguled by monocytes
+constant kLysMono = 10
+
 ! Monocytes in tissue
 constant kdegMono = 0               ! Based on half-life
 kdiffMonoM = 0.02                   ! 1/time for a monoctye to differentiate into macrophage (t Mono/M)
 kdiffMonoDC = 0.02                  ! 1/time for a monoctye to differentiate into dendritic cell (t Mono/DC)
+constant MAX_rhoP_Mono = 1500
+constant kAreaMono = 5e-5
 
 ! Monoctyes in blood
 krecMonoBlood = 0.04                  ! 1/time for a monocyte to migrate
 constant kdegMonoBlood = 0
 kmigMonoBlood = krecMonoBlood
-constant kmigMonoBlood_inflammatory = 0.1      ! Increase in influx
+constant kmigMonoBlood_inflammatory = 0.1! Increase in influx per MCP-1 or MCP-3
 
 ! Macrophage
 constant kdegM = 0
@@ -66,20 +81,8 @@ constant Mvel = 0.02                     ! cm/hr (Stober et al., 1989)
 constant MDiam = 15.0e-4                 ! mac diameter (cm)
 constant CHEMOI = 8e-8 ! 0.25e2            ! chemotactic index (fit, unitless)
 constant kdegMax = 0.01
-!constant tau_PM_M = 100
+constant tau_PM_M = 100
 constant P50_rhoP_M = 1500
-
-! IFN-gamma
-constant kgenINFG_MP = 0.01 ! IFGN/M/s
-constant kdegIFNG = 10
-
-! IL-1A
-constant kgenIL1A_MP = 0.1 ! IL-1A/M/s
-constant kdegIL1A = 1
-
-! IL-12
-constant kgenIL12_MP = 0.1 ! IL-12/M/s
-constant kdegIL12 = 1
 
 ! Dendritic cell
 kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		! must be in steady state
@@ -101,21 +104,27 @@ constant P50_rhoP_DC = 1500
 
  		DERIVATIVE
 
-TABLE P_experimental_tbl_hall, 1, 3 / 0,24,72,0,1e6,1e8 / ! Hall
 TABLE P_experimental_tbl_woolard, 1, 6 / 0,24,72,168,240,336,0,2204.365,81366.88,902036.3,1271972,786.1808 /
 TABLE inflammatory_cytokine_tbl_hall, 1, 5 / 0,6,24,72,120,0,32.7,32.6,838.3,171.2 / ! Sharma IFN-gamma
 TABLE inflammatory_cytokine_tbl_woolard, 1, 6 / 0,6,24,72,120,350,0,32.7,32.6,193.6,37.9,37.9 / ! Modified Sharma IFN-gamma
 
-TABLE MCP1_tbl_hall, 1, 5 / 0,6,24,72,120,49,78,71,17270,28683 / ! Sharma - monocyte recruitment
-TABLE MCP3_tbl_hall, 1, 5 / 0,6,24,72,120,50,83,88,11630,16319 / ! Sharma - monocyte recruitment
-TABLE GROA_tbl_hall, 1, 5 / 0,6,24,72,120,28,60,211,4458.7,5205.4 / ! Sharma - neutrophil recruitment (surrogate for IL-8)
-TABLE IL1B_tbl_hall, 1, 5 / 0,6,24,72,120,952.3,1055,1357,6723.3,4064.7 / ! Sharma - NK recruitment
-TABLE IL18_tbl_hall, 1, 5 / 0,6,24,72,120,767.8,812,946.7,8283.3,14926.7 / ! Sharma - cytokine secreted by infected epithelial cells acting on NK cells (surrogate for IFN-alpha and -beta)
-TABLE IFNG_tbl_hall, 1, 5 / 0,6,24,72,120,7.8375,11.1,12.1,639.8,138.3 / ! Sharma - secreted by NK cells and it is a pro-inflammatory
+TABLE P_exp_itbl_hall, 1, 13 / 0,6,12,18,24,30,36,42,48,54,60,66,72,0,73216.9483101392,278578.528827038,594650.844930417,1000000,3355327.66940027,9295073.31013917,18458409.6980616,30484509.6090126,45012545.818837,61681691.1033797,80131118.2384858,100000000 / ! Hall
+TABLE MCP1_itbl_hall, 1, 21 / 0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,49,78,76.1851851851852,72.8148148148148,71,622.428153915971,2115.17331342618,4306.9265251741,6955.37883580316,9818.22129195683,12653.1449402786,15217.8408274118,17270,18957.0576100882,20583.4175597214,22142.2240205432,23626.6211641968,25029.7531623259,26344.7641865738,27564.798408584,28683 / ! Hall
+TABLE MCP3_itbl_hall, 1, 21 / 0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,50,83,85.3139458914706,86.2484368563164,88,494.985061580625,1582.0925130169,3157.2275791552,5028.29548484189,7003.20145492335,8889.85071424594,10496.148487656,11630,12452.4422689775,13241.2729513547,13979.5382305778,14650.284290093,15236.5573133467,15721.4034837849,16087.8689848539,16319 / ! Hall
+TABLE GROA_itbl_hall, 1, 21 / 0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,28,60,97.7564821952571,143.918227167931,211,438.715164084904,907.093535607457,1539.12455883671,2257.7976780417,2986.10233749148,3647.02798145509,4163.56405420158,4458.7,4612.33975245243,4753.98328421582,4881.01409814148,4990.81569708073,5080.77158388489,5148.26526140527,5190.68023249321,5205.4 / ! Hall
+TABLE IL1B_itbl_hall, 1, 21 / 0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,952.3,1055,1143.57464254483,1231.36514377225,1357,1708.11799623735,2372.59672406305,3239.42288964901,4197.58319916715,5136.06435878941,5943.85307468768,6509.93605303391,6723.3,6700.26904296875,6620.59921875,6468.42509765625,6227.88125,5883.10224609375,5418.22265625,4817.37705078125,4064.7 / ! Hall
+TABLE IL18_itbl_hall, 1, 21 / 0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,767.8,812,849.968703552572,888.211409222337,946.7,1224.24078879976,1850.87053439211,2743.40678855222,3818.66710305527,4993.4690296764,6184.63012019079,7308.9679263736,8283.3,9149.98960165191,10006.7206901824,10853.2918647733,11689.5017246066,12515.148868864,13330.0318967275,14133.9494073788,14926.7 / ! Hall
+TABLE IFNG_itbl_hall, 1, 21 / 0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,7.8375,11.1,11.5420672176192,11.7397644786896,12.1,39.5133577415776,110.827408314155,211.384539910578,326.527140723693,441.597598946347,541.938302771385,612.891640391654,639.8,632.8267578125,611.4140625,574.8224609375,522.3125,453.1447265625,366.5796875,261.8779296875,138.3 / ! Hall
 
 IF (SIMULATION .EQ. 1) THEN ! Hall
-  P_experimental = P_experimental_tbl_hall(T) 
+  P_experimental = P_exp_itbl_hall(T)
   IC = inflammatory_cytokine_tbl_hall(T) - inflammatory_cytokine_tbl_hall(0)
+  MCP1 = MCP1_itbl_hall(T) - MCP1_itbl_hall(0)
+  MCP3 = MCP3_itbl_hall(T) - MCP3_itbl_hall(0)
+  GROA = GROA_itbl_hall(T) - GROA_itbl_hall(0)
+  IL1B = IL1B_itbl_hall(T) - IL1B_itbl_hall(0)
+  IL18 = IL18_itbl_hall(T) - IL18_itbl_hall(0)
+  IFNG = IFNG_itbl_hall(T) - IFNG_itbl_hall(0)
 ELSE IF (SIMULATION .EQ. 2) THEN ! Woolard
   P_experimental = P_experimental_tbl_woolard(T)
   IC = inflammatory_cytokine_tbl_woolard(T) - inflammatory_cytokine_tbl_woolard(0)
@@ -130,6 +139,37 @@ PTot = P + PM + PN !+ PDC
 PperM = PM/M
 !PperDC = PDC/DC
 PperN = PN/N
+
+!--------------------------------------------------------------------------
+! Cytokines
+!--------------------------------------------------------------------------
+
+!--------------------------------------------------------------------------
+! MCP-1
+! Notes from cytokine book:
+!   MCP-2 - monocyte chemotaxis, monocyte activation, T cell chemotaxis, NK cell cytolysis
+! Notes from www.copewithcytokines.de
+!   MCP-1 is chemotactic for monocytes but not neutrophils. MCP-1 is expressed by monocytes
+MCP1_tmp = integ(kgenMCP1_ATII*ATIIP + kgenMCP1_Mono*MonoP,0)
+
+!--------------------------------------------------------------------------
+! Cells
+!--------------------------------------------------------------------------
+
+!--------------------------------------------------------------------------
+! Aveolar type II in tissue (ATII)
+RinfATII = RPhATII*(ATII/(ATII+ATIIP))*ATII ! Compute the fraction of pathogens being engulfed by non-infected
+RATII = -RinfATII
+ATII = integ(RATII,ATII0)
+
+!--------------------------------------------------------------------------
+! ATII infected by pathogen
+ATIIP = integ(RinfATII,0)
+
+!--------------------------------------------------------------------------
+! Pathogen engulfed by ATII
+RPhATII = min(rhoP,MAX_rhoP_ATII)*(ATII + ATIIP)*kAreaATII ! encounter rate (P/t)
+PATII = integ(RPhATII,0)
 
 !--------------------------------------------------------------------------
 ! Dendritic cells
@@ -159,7 +199,7 @@ DCA = integ(RactDC - RdeathDCA - RmigDCA,0)
 !--------------------------------------------------------------------------
 ! Neutrophils
 ! Cell surface receptors allow neutrophils to detect chemical gradients of cytokines
-RrecN = (krecN + krecN_inflammatory*IC/(P50_IC_N + IC))*N0
+RrecN = (krecN + krecN_inflammatory*GROA/(P50_GROA_N + GROA))*N0
 RdeathN = kdegN*N
 RinfN = RPhN*(N/(N+NP))*N ! Compute the fraction of pathogens being engulfed by non-infected
 N = integ(-RdeathN + RrecN - RinfN,N0)
@@ -204,22 +244,10 @@ RmigMP = kmigMP*MP
 MP = integ(RinfM - RdeathMP - RmigMP,0)
 
 !--------------------------------------------------------------------------
-! IFN-gamma
-IFNG = integ(kgenINFG_MP*MP - kdegIFNG*IFNG,0)
-
-!--------------------------------------------------------------------------
-! IL-1 alpha
-IL1A = integ(kgenIL1A_MP*MP - kdegIL1A*IL1A,0)
-
-!--------------------------------------------------------------------------
-! IL12
-IL12 = integ(kgenIL12_MP*MP - kdegIL12*IL12,0)
-
-!--------------------------------------------------------------------------
 ! MONOCYTE in blood (MonoBlood)
 RrecMonoBlood = krecMonoBlood*MonoBlood0
 RdeathMonoBlood = kdegMonoBlood*MonoBlood
-RmigMonoBlood = kmigMonoBlood*MonoBlood + kmigMonoBlood_inflammatory*MonoBlood*IC/(P50_IC_Mono + IC)
+RmigMonoBlood = kmigMonoBlood*MonoBlood + kmigMonoBlood_inflammatory*MonoBlood*(min(MCP1,MAX_MCP1_Mono) + min(MCP3,MAX_MCP3_Mono))
 RMonoBlood = RrecMonoBlood - RdeathMonoBlood - RmigMonoBlood
 MonoBlood = integ(RMonoBlood,MonoBlood0)
 
@@ -230,11 +258,23 @@ MonoBloodTissue = integ(RMonoBloodTissue,MonoBloodTissue0)
 
 !--------------------------------------------------------------------------
 ! MONOCYTE in tissue (Mono)
-RdiffMono = kdiffMonoDC*Mono + kdiffMonoM*Mono
+RdiffMono = (kdiffMonoDC + kdiffMonoM)*Mono
 RrecMono = RmigMonoBlood/MonoBlood*MonoBloodTissue ! By dividing by the MonoBlood we get a rate constant
 RdeathMono = kdegMono*Mono
-RMono = RrecMono - RdiffMono - RdeathMono
+RinfMono = RPhMono*(Mono/(Mono+MonoP))*Mono ! Compute the fraction of pathogens being engulfed by non-infected
+RMono = RrecMono - RdiffMono - RdeathMono - RinfMono
 Mono = integ(RMono,Mono0)
+
+!--------------------------------------------------------------------------
+! Monocyte infected by pathogen
+RdeathMonoP = kdegMono*MonoP
+MonoP = integ(RinfMono - RdeathMonoP,0)
+
+!--------------------------------------------------------------------------
+! Pathogen engulfed by Monocyte (Mono)
+RPhMono = min(rhoP,MAX_rhoP_Mono)*(Mono + MonoP)*kAreaMono ! encounter rate (P/t)
+RLysMono = kLysMono*PMono ! Destroyed by infected neutrophil
+PMono = integ(RPhMono - RLysMono - RdeathMonoP*PMono/max(MonoP,1),0) 
 
 !--------------------------------------------------------------------------
 ! Natural killer cells
@@ -248,7 +288,7 @@ RPh = RPhM + RPhN !+ RPhDC  !+ RPhAT2
 RPKillNK = 0
 RPKillCTL = 0
 RPKill = RPKillNK + RPKillCTL
-RRelease = RRelM !+ RRelN
+RRelease = 0!RRelM !+ RRelN
 RP = - RPh - RPKill + RRelease
 P = integ(RP,0)
 

@@ -30,7 +30,7 @@ KLYS = 10
 KLYSDC = 10
 
 % Monoctyes in blood
-KMIGMONOBLOOD_INFLAMMATORY = 0.1      % Increase in influx
+KMIGMONOBLOOD_INFLAMMATORY = 1e-3      % Increase in influx per MCP-1 or MCP-3
 
 % Macrophage
 CHEMOI = .5 % 0.25e2                 % chemotactic index (fit, unitless)
