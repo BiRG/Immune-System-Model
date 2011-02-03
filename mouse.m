@@ -30,5 +30,5 @@ MVEL = 0.02                     % cm/hr (Stober et al., 1989)
 MDIAM = 15.0e-4                 % mac diameter (cm)
 % Dendritic cell
 %kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		% must be in steady state
-KAREADC = 5e-5
+KAREADC = 4e-5
 %kmigDC = 0.1*kdiffMonoDC*Mono0/DC0     % Must be balanced in steady state

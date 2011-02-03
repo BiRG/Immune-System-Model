@@ -1,0 +1,8 @@
+!--------------------------------------------------------------------------
+! MCP-3
+! Notes from cytokine book:
+!   MCP-2 - monocyte chemotaxis, monocyte activation, T cell chemotaxis, NK cell cytolysis
+! Notes from www.copewithcytokines.de
+!   MCP-3 is chemotactic for monocytes but not neutrophils. MCP-3 is expressed by monocytes
+MCP3_tmp = integ(kgenMCP3_ATII*ATIIP + kgenMCP3_Mono*MonoP,0)
+

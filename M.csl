@@ -1,0 +1,24 @@
+!--------------------------------------------------------------------------
+! Macrophage
+RdeathM = kdegM*M
+RmigM = kmigM*M
+RrecM = kdiffMonoM*Mono
+RinfM = RPhM*(M/(M+MP))*M ! Compute the fraction of pathogens being engulfed by non-infected
+RM = RrecM - RmigM - RdeathM - RinfM
+M = integ(RM,M0)
+
+!--------------------------------------------------------------------------
+! Macrophage infected by pathogen
+RdeathMP = (kdegM + kdegMax)*MP
+RmigMP = kmigMP*MP
+MP = integ(RinfM - RdeathMP - RmigMP,0)
+
+!--------------------------------------------------------------------------
+! PATHOGEN engulfed by MACROPHAGE (PM)
+RPhM = (1+IFNG/(IFNG + P50_IFNG_M))*2*P50_rhoP_M*(rhoP/(rhoP + P50_rhoP_M))*(M + MP)*CHEMOI*Mvel*MDiam ! encounter rate (P/t)
+RLys = kLys*PM !min(M,PM)/(PM/max(M,1)+P50Lys)  ! min(M,PM) is estimate of the number of M that have engulfed P.
+! Ignored for now
+!RRepPM = kRep*PM
+!RRelM = RdeathM*PM/M  ! Released from death of M
+PM = integ(RPhM - RLys,0)
+

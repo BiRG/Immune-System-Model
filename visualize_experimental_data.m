@@ -36,6 +36,7 @@ for i = 1:length(data)
 end
 
 set(0,'DefaultFigureWindowStyle','docked');
+new_hs = [];
 for k = 1:length(keys)
     new_hs(end+1) = figure;
     inxs = ht.get(keys{k});

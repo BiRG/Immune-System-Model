@@ -1,0 +1,4 @@
+!--------------------------------------------------------------------------
+! GROA
+GROA_tmp = integ(kgenGROA_ATII*ATIIP + kgenGROA_Mono*MonoP,0)
+
