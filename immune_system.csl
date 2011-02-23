@@ -1,17 +1,15 @@
 PROGRAM
 
 	INITIAL
-constant SIMULATION = 1 ! Hall by default
-
 ! Initial values
-constant M0 = 1.75e6
-constant DC0 = 4.5e5 
-constant NK0 = 340
-constant N0 = 6e5
-constant Mono0 = 5e5
+M0 = 954907 + 763323.9498
+DC0 = 200533.58306804 + 227996.8762
+NK0 = 340
+N0 = 6.26E+05
+MONO0 = 5.90E+05
+ATII0 = 2.81E+06
 MonoBlood0 = Mono0
 MonoBloodTissue0 = Mono0
-constant ATII0 = 2.5e6
 
 constant LuSA = 500 ! cm^2 for mouse (RDDR, EPA)
 
@@ -47,17 +45,17 @@ constant kdegNK_anti_inflammatory = 0.04
 
 ! ATII
 constant MAX_rhoP_ATII = 5000000
-constant kPhATII = 0.2e-13
-constant kdegATIIP = 2.7
+constant kPhATII = 0.3e-13
+constant kdegATIIP = 4
 
 ! Neutrophil
 constant krecN = 0.02              ! basal recruitment, replication/cell division 
-constant krecN_inflammatory = 0.12
+constant krecN_inflammatory = 0.1
 constant P50_IC_N = 160
 !constant kdegN_anti_inflammatory = 250
 constant kdegN = 0.02
-constant kAreaN = 2e-13            ! cm*cm/hr
-constant P50_rhoP_N = 3e4
+constant kAreaN = 1.8e-13            ! cm*cm/hr
+constant P50_rhoP_N = 1e4
 !constant tau_PN_N = 50
 
 ! Pathogens engulfed by neutrophils
@@ -78,33 +76,33 @@ constant kLysMono = 10
 
 ! Monocytes in tissue
 constant kdegMono = 0               ! Based on half-life
-kdiffMonoM = 0.02                   ! 1/time for a monoctye to differentiate into macrophage (t Mono/M)
-kdiffMonoDC = 0.02                  ! 1/time for a monoctye to differentiate into dendritic cell (t Mono/DC)
+kdiffMonoM = 0.03                   ! 1/time for a monoctye to differentiate into macrophage (t Mono/M)
+kdiffMonoDC = 0.03                  ! 1/time for a monoctye to differentiate into dendritic cell (t Mono/DC)
 constant MAX_rhoP_Mono = 1e5
-constant kAreaMono = 1.5e-15
+constant kAreaMono = 2e-15
 
 ! Monoctyes in blood
 krecMonoBlood = 0.04                  ! 1/time for a monocyte to migrate
 constant kdegMonoBlood = 0
 kmigMonoBlood = krecMonoBlood
-constant kmigMonoBlood_inflammatory = -0 ! Increase in influx per MCP-1 or MCP-3
+constant kmigMonoBlood_inflammatory = 0.1 ! Increase in influx per MCP-1 or MCP-3
 constant MAX_MCP3_Mono = 50
 
 ! Macrophage
 constant kdegM = 0
 kmigM = kdiffMonoM*Mono0/M0      				! Must be balanced in steady state
-kmigMP = 30*kmigM
+kmigMP = 2*kmigM
 constant Mvel = 0.02                     ! cm/hr (Stober et al., 1989)
 constant MDiam = 15.0e-4                 ! mac diameter (cm)
-constant CHEMOI = 1e-20 ! 0.25e2            ! chemotactic index (fit, unitless)
-constant kdegMax = 0.01
-constant P50_rhoP_M = 2e4
+constant CHEMOI = 1e-8 	              ! chemotactic index (fit, unitless)
+constant kdegMax = 0.3
+constant P50_rhoP_M = 3e3
 
 ! Dendritic cell
 kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		! must be in steady state
-constant kAreaDC = 1e-5
+constant kAreaDC = 4.2e-5
 kmigDC = 0.1*kdiffMonoDC*Mono0/DC0     ! Must be balanced in steady state
-kmigDCA = 35*kmigDC
+kmigDCA = 30*kmigDC
 constant P50_rhoP_DC = 1500
 
 	END ! INITIAL
@@ -120,21 +118,9 @@ constant P50_rhoP_DC = 1500
 
  		DERIVATIVE
 
-TABLE P_experimental_tbl_woolard, 1, 6 / 0,24,72,168,240,336,0,2204.365,81366.88,902036.3,1271972,786.1808 /
-TABLE inflammatory_cytokine_tbl_hall, 1, 5 / 0,6,24,72,120,0,32.7,32.6,838.3,171.2 / ! Sharma IFN-gamma
-TABLE inflammatory_cytokine_tbl_woolard, 1, 6 / 0,6,24,72,120,350,0,32.7,32.6,193.6,37.9,37.9 / ! Modified Sharma IFN-gamma
-INCLUDE 'TBL.csl'
-
-IF (SIMULATION .EQ. 1) THEN ! Hall
-  IC = inflammatory_cytokine_tbl_hall(T) - inflammatory_cytokine_tbl_hall(0)
-ELSE IF (SIMULATION .EQ. 2) THEN ! Woolard
-  IC = inflammatory_cytokine_tbl_woolard(T) - inflammatory_cytokine_tbl_woolard(0)
-END IF
+INCLUDE 'TBL_Hall.csl'
 
 rhoP = P_experimental/LuSA  ! surface density of pathogen (num/cm**2)	
-
-TABLE anti_inflammatory_cytokine_tbl, 1, 5 / 0,6,24,72,120,300,326.6,304.2,459.7,387.3 /
-AIC = anti_inflammatory_cytokine_tbl(T) - anti_inflammatory_cytokine_tbl(0)
 
 PTot = P + PM + PN !+ PDC
 PperM = PM/M
@@ -147,6 +133,7 @@ PperN = PN/N
 
 include 'MCP3.csl'
 include 'GROA.csl'
+include 'IL18.csl'
 
 !--------------------------------------------------------------------------
 ! Cells

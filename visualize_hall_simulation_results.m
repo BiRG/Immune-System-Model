@@ -1,7 +1,7 @@
 close all
 
 data = SBmeasurement('datasets/Hall data for sbtoolbox.xls');
-[time,componentNames,values,minvalues,maxvalues] = SBmeasurementdata(data);
+[time,componentNames,values,minvalues,maxvalues] = SBmeasurementdata(data{1}); % data{1} is U112
 E = (maxvalues - minvalues)/2;
 [I,J] = ind2sub(size(E),find(isnan(E)));
 E(I,J) = 0;
@@ -41,6 +41,7 @@ rinfatii = results(:,25);
 ifng = results(:,26);
 groa = results(:,27);
 groa_tmp = results(:,28);
+il18_tmp = results(:,29);
 
 set(0,'DefaultFigureWindowStyle','docked');
 
@@ -84,8 +85,8 @@ title('ATII');
 set(gcf,'name','M');
 hold off
 subplot(2,1,2);
-exp_inxs = find(strcmp(componentNames,'ATII_infected'));
-res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'ATII_infected'},'plot');
+exp_inxs = find(strcmp(componentNames,'Infected_ATII'));
+res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Infected_ATII'},'plot');
 set(res.bars,'facecolor',[0.7,0.7,0.7]);
 hold on
 y = atiip;
@@ -95,16 +96,16 @@ title('ATII');
 set(gcf,'name','ATII');
 hold off
 
-figure;
-plot(t,rinfatii,'linewidth',4,'color','k');
-title('RinfATII');
-set(gcf,'name','RinfATII');
+% figure;
+% plot(t,rinfatii,'linewidth',4,'color','k');
+% title('RinfATII');
+% set(gcf,'name','RinfATII');
 
 figure;
 subplot(2,1,1);
 exp_inxs = find(strcmp(componentNames,'M'));
-% exp_inxs = find(strcmp(componentNames,'M_infected'));
-res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'M'},'plot');
+exp_inxs(end+1) = find(strcmp(componentNames,'Alveolar_M'));
+res = barweb(sum(values(:,exp_inxs),2),sqrt(sum(E(:,exp_inxs).^2,2)),0.9,time,[],[],[],[], [],{'M'},'plot');
 set(res.bars,'facecolor',[0.7,0.7,0.7]);
 hold on
 y = m + mp;
@@ -114,9 +115,10 @@ title('Machrophage');
 set(gcf,'name','M');
 hold off
 subplot(2,1,2);
-exp_inxs = find(strcmp(componentNames,'M_infected'));
+exp_inxs = find(strcmp(componentNames,'Infected_M'));
+exp_inxs(end+1) = find(strcmp(componentNames,'Infected_Alveolar_M'));
 % exp_inxs = find(strcmp(componentNames,'M_infected'));
-res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'M_infected'},'plot');
+res = barweb(sum(values(:,exp_inxs),2),sqrt(sum(E(:,exp_inxs).^2,2)),0.9,time,[],[],[],[], [],{'Infected M'},'plot');
 set(res.bars,'facecolor',[0.7,0.7,0.7]);
 hold on
 y = mp;
@@ -128,9 +130,9 @@ hold off
 % legend('M','Exp M','MP','Exp MP');
 
 figure;
-subplot(2,1,1);
 exp_inxs = find(strcmp(componentNames,'DC'));
-res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'DC'},'plot');
+exp_inxs(end+1) = find(strcmp(componentNames,'Big_DC'));
+res = barweb(sum(values(:,exp_inxs),2),sqrt(sum(E(:,exp_inxs).^2,2)),0.9,time,[],[],[],[], [],{'DC'},'plot');
 set(res.bars,'facecolor',[0.7,0.7,0.7]);
 hold on
 y = dc + dca;
@@ -139,26 +141,13 @@ yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('DC');
 set(gcf,'name','DC');
 hold off
-subplot(2,1,2);
-exp_inxs = find(strcmp(componentNames,'DC_activated'));
-res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'DC_activated'},'plot');
-set(res.bars,'facecolor',[0.7,0.7,0.7]);
-hold on
-y = dca;
-plot(t,y,'linewidth',4,'color','k');
-yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
-title('DC activated');
-set(gcf,'name','DC');
-hold off
-% legend('M','Exp M','MP','Exp MP');
 
 figure;
-exp_inxs = find(strcmp(componentNames,'P_HP'));
+exp_inxs = find(strcmp(componentNames,'P'));
 % exp_inxs = find(strcmp(componentNames,'M_infected'));
 res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'P'},'plot');
 set(res.bars,'facecolor',[0.7,0.7,0.7]);
 hold on
-y = m + mp;
 plot(t,p_experimental,'linewidth',4,'color','k');
 yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('Pathogen');
@@ -167,7 +156,7 @@ hold off
 
 
 figure;
-subplot(5,1,1);
+subplot(3,1,1);
 exp_inxs = find(strcmp(componentNames,'Mono'));
 % exp_inxs = find(strcmp(componentNames,'M_infected'));
 res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Mono'},'plot');
@@ -179,32 +168,22 @@ yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('Mono');
 set(gcf,'name','M');
 hold off
-subplot(5,1,2);
+subplot(3,1,2);
 y = monoblood;
 plot(t,y,'linewidth',4,'color','k');
 yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('MonoBlood');
-subplot(5,1,3);
-exp_inxs = find(strcmp(componentNames,'Mono_infected'));
+subplot(3,1,3);
+exp_inxs = find(strcmp(componentNames,'Infected_Mono'));
 % exp_inxs = find(strcmp(componentNames,'M_infected'));
-res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Mono_infected'},'plot');
+res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Infected_Mono'},'plot');
 set(res.bars,'facecolor',[0.7,0.7,0.7]);
 hold on
 y = monop;
 plot(t,y,'linewidth',4,'color','k');
 yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('MonoP');
-subplot(5,1,4);
-y = pmono;
-plot(t,y,'linewidth',4,'color','k');
-yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
-title('PMono');
-subplot(5,1,5);
-y = rphmono;
-plot(t,y,'linewidth',4,'color','k');
-yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
-title('RPhMono');
-set(gcf,'name','Mono');
+set(gcf,'name','Momo');
 
 figure;
 plot(t,ifng,'linewidth',4,'color','k');
@@ -238,9 +217,9 @@ title('Neutrophil');
 set(gcf,'name','N');
 hold off
 subplot(2,1,2);
-exp_inxs = find(strcmp(componentNames,'N_infected'));
+exp_inxs = find(strcmp(componentNames,'Infected_N'));
 % exp_inxs = find(strcmp(componentNames,'M_infected'));
-res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'N_infected'},'plot');
+res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Infected_N'},'plot');
 set(res.bars,'facecolor',[0.7,0.7,0.7]);
 hold on
 y = np;
@@ -249,6 +228,21 @@ yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('Neutrophil');
 set(gcf,'name','N');
 hold off
+
+figure;
+subplot(1,1,1);
+exp_inxs = find(strcmp(sharma_componentNames,'IL18'));
+% exp_inxs = find(strcmp(componentNames,'M_infected'));
+res = barweb(sharma_values(:,exp_inxs),sharma_E(:,exp_inxs),0.9,sharma_time,[],[],[],[], [],{'IL18'},'plot');
+set(res.bars,'facecolor',[0.7,0.7,0.7]);
+hold on
+y = il18_tmp; % Zero subtracted out
+plot(t,y,'linewidth',4,'color','k');
+yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+title('IL18');
+hold off
+set(gcf,'name','IL18');
+
 
 % legend('M','Exp M','MP','Exp MP');
 % subplot(3,2,2);

@@ -14,9 +14,12 @@ for j = 1:length(data)
     [m,n] = size(values);
     % Normalize
     orig_values = values;
-    values = (values - repmat(values(1,:),m,1))./repmat(std(values),m,1);
-    maxvalues = (maxvalues - repmat(orig_values(1,:),m,1))./repmat(std(orig_values),m,1);
-    minvalues = (minvalues - repmat(orig_values(1,:),m,1))./repmat(std(orig_values),m,1);
+%     values = (values - repmat(values(1,:),m,1))./repmat(std(values),m,1);
+%     maxvalues = (maxvalues - repmat(orig_values(1,:),m,1))./repmat(std(orig_values),m,1);
+%     minvalues = (minvalues - repmat(orig_values(1,:),m,1))./repmat(std(orig_values),m,1);
+    values = (values)./repmat(max(values),m,1);
+    maxvalues = (maxvalues)./repmat(max(orig_values),m,1);
+    minvalues = (minvalues)./repmat(max(orig_values),m,1);
     %values = (values - repmat(mean(values),m,1))./repmat(std(values),m,1);
 
     d = pdist(values(1:end-1,:)');

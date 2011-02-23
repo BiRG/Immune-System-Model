@@ -1,0 +1,311 @@
+% Export results for ASM 2011 Poster
+close all
+
+s = hgexport('factorystyle');
+s.Resolution = 600;
+s.FontMode = 'fixed';
+s.FixedFontSize = 10;
+% s.Bounds = 'tight';
+s.Format = 'jpeg';
+
+data = SBmeasurement('datasets/Hall data for sbtoolbox.xls');
+[time,componentNames,values,minvalues,maxvalues] = SBmeasurementdata(data);
+E = (maxvalues - minvalues)/2;
+[I,J] = ind2sub(size(E),find(isnan(E)));
+E(I,J) = 0;
+
+sharma_data = SBmeasurement('datasets/Sharma data for sbtoolbox.xls');
+[sharma_time,sharma_componentNames,sharma_values,sharma_minvalues,sharma_maxvalues] = SBmeasurementdata(sharma_data{2}); % 2 is the WT
+sharma_E = (sharma_maxvalues - sharma_minvalues)/2;
+[I,J] = ind2sub(size(sharma_E),find(isnan(sharma_E)));
+sharma_E(I,J) = 0;
+
+load('hall_simulation_results')
+t = results(:,1);
+m = results(:,2);
+dc = results(:,3);
+nk = results(:,4);
+mono = results(:,5);
+monoblood = results(:,6);
+rhop = results(:,7);
+n = results(:,8);
+pn = results(:,9);
+np = results(:,10);
+ic = results(:,11);
+aic = results(:,12);
+dca = results(:,13);
+mp = results(:,14);
+rmigmonoblood = results(:,15);
+rphmono = results(:,16);
+mcp3 = results(:,17);
+p_experimental = results(:,18);
+monop = results(:,19);
+pmono = results(:,20);
+atii = results(:,21);
+patii = results(:,22);
+atiip = results(:,23);
+mcp3_tmp = results(:,24);
+rinfatii = results(:,25);
+ifng = results(:,26);
+groa = results(:,27);
+groa_tmp = results(:,28);
+il18_tmp = results(:,29);
+
+
+% figure;
+% subplot(2,1,1);
+% exp_inxs = find(strcmp(componentNames,'Mono'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Exp'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = mono;
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('Monocytes (Hall{\it et al.} 2008)');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% hold off
+% subplot(2,1,2);
+% exp_inxs = find(strcmp(componentNames,'Mono_infected'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Exp'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = monop;
+% h = plot(t,y,'linewidth',4,'color','k');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% hold off
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('Infected Monocytes (Hall{\it et al.} 2008)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% hgexport(gcf,'images/mono.jpg',s);
+% 
+% figure;
+% exp_inxs = find(strcmp(componentNames,'P_HP'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Exp'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% title('Pathogen (Hall{\it et al.} 2008)');
+% ylabel('CFU');
+% xlabel('Time (hours)');
+% set(gcf,'name','P');
+% legend([res.bars],{'Exp'},'Location','NorthWest');
+% hgexport(gcf,'images/P.jpg',s);
+
+figure;
+% subplot(2,1,1);
+exp_inxs = find(strcmp(componentNames,'DC'));
+res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'DC'},'plot');
+set(res.bars,'facecolor',[0.7,0.7,0.7]);
+hold on
+y = dc + dca;
+h = plot(t,y,'linewidth',4,'color','k');
+yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+title('Dendritic Cells (Hall{\it et al.} 2008)');
+set(gcf,'name','DC');
+ylabel('Count');
+xlabel('Time (hours)');
+legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+hold off
+% subplot(2,1,2);
+% exp_inxs = find(strcmp(componentNames,'DC_activated'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'DC_activated'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = dca;
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('Activated Dendritic Cells (Hall{\it et al.} 2008)');
+% set(gcf,'name','DC');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% hold off
+hgexport(gcf,'images/DC.jpg',s);
+
+% figure;
+% subplot(2,1,1);
+% exp_inxs = find(strcmp(componentNames,'M'));
+% % exp_inxs = find(strcmp(componentNames,'M_infected'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'M'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = m + mp;
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('Macrophage Cells (Hall{\it et al.} 2008)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% set(gcf,'name','M');
+% hold off
+% subplot(2,1,2);
+% exp_inxs = find(strcmp(componentNames,'M_infected'));
+% % exp_inxs = find(strcmp(componentNames,'M_infected'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'M_infected'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = mp;
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('Infected Macrophage Cells (Hall{\it et al.} 2008)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% set(gcf,'name','M');
+% hold off
+% hgexport(gcf,'images/M.jpg',s);
+% 
+% figure;
+% subplot(2,1,1);
+% exp_inxs = find(strcmp(componentNames,'ATII'));
+% % exp_inxs = find(strcmp(componentNames,'M_infected'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'ATII'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = atii + atiip;
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('ATII Cells (Hall{\it et al.} 2008)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% set(gcf,'name','M');
+% hold off
+% subplot(2,1,2);
+% exp_inxs = find(strcmp(componentNames,'ATII_infected'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'ATII_infected'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = atiip;
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('Infected ATII Cells (Hall{\it et al.} 2008)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% set(gcf,'name','ATII');
+% hold off
+% hgexport(gcf,'images/ATII.jpg',s);
+% 
+% figure;
+% subplot(2,1,1);
+% exp_inxs = find(strcmp(componentNames,'N'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'N'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = n + np;
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('Neutrophils (Hall{\it et al.} 2008)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% set(gcf,'name','N');
+% hold off
+% subplot(2,1,2);
+% exp_inxs = find(strcmp(componentNames,'N_infected'));
+% % exp_inxs = find(strcmp(componentNames,'M_infected'));
+% res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'N_infected'},'plot');
+% set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = np;
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% title('Infected Neutrophils (Hall{\it et al.} 2008)');
+% legend([res.bars,h],{'Exp','Sim'},'Location','NorthWest');
+% ylabel('Count');
+% xlabel('Time (hours)');
+% set(gcf,'name','N');
+% hold off
+% hgexport(gcf,'images/N.jpg',s);
+
+% Load Visualize Sharma First
+[m,n] = size(sharma_values);
+
+s.Bounds='tight';
+hgexport(gcf,'images/WT_vs_Mutant_Clustering.jpg',s);
+
+[sharma_mutant_time,sharma_mutant_componentNames,sharma_mutant_values,sharma_mutant_minvalues,sharma_mutant_maxvalues] = SBmeasurementdata(sharma_data{1}); % 1 is the Mutant
+sharma_mutant_E = (sharma_mutant_maxvalues - sharma_mutant_minvalues)/2;
+[I,J] = ind2sub(size(sharma_mutant_E),find(isnan(sharma_mutant_E)));
+sharma_mutant_E(I,J) = 0;
+norm_sharma_values = (sharma_values - repmat(sharma_values(1,:),m,1))./repmat(max(sharma_values),m,1);
+norm_sharma_maxvalues = (sharma_maxvalues)./repmat(max(sharma_values),m,1);
+norm_sharma_minvalues = (sharma_minvalues)./repmat(max(sharma_values),m,1);
+norm_sharma_mutant_values = (sharma_mutant_values)./repmat(max(sharma_mutant_values),m,1);
+norm_sharma_mutant_maxvalues = (sharma_mutant_maxvalues)./repmat(max(sharma_mutant_values),m,1);
+norm_sharma_mutant_minvalues = (sharma_mutant_minvalues)./repmat(max(sharma_mutant_values),m,1);
+
+% figure;
+% i = find(strcmp(sharma_componentNames,'MCP3'));
+% j = find(strcmp(sharma_mutant_componentNames,'MCP3'));
+% Y = [norm_sharma_values(1:end,i) norm_sharma_mutant_values(1:end,j)];
+% E = [norm_sharma_maxvalues(1:end,i)-norm_sharma_values(1:end,i) norm_sharma_mutant_maxvalues(1:end,j)-norm_sharma_mutant_values(1:end,j)];
+% res = barweb(Y,E,0.9,sharma_time,[],[],[],[], [],{'WT','Mutant'},'plot');
+% % set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = mcp3_tmp./max(sharma_values(:,i));
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% legend([res.bars,h],{'WT','Mutant','Sim'},'Location','NorthWest');
+% title('MCP-3 (Sharma{\it et al.} 2009)');
+% ylabel('Normalized to maximum of 1');
+% xlabel('Time (hours)');
+% hold off
+% set(gcf,'name','MCP3');
+% hgexport(gcf,'images/MCP3.jpg',s);
+
+
+% figure;
+% i = find(strcmp(sharma_componentNames,'GROA'));
+% j = find(strcmp(sharma_mutant_componentNames,'GROA'));
+% Y = [norm_sharma_values(1:end,i) norm_sharma_mutant_values(1:end,j)];
+% E = [norm_sharma_maxvalues(1:end,i)-norm_sharma_values(1:end,i) norm_sharma_mutant_maxvalues(1:end,j)-norm_sharma_mutant_values(1:end,j)];
+% res = barweb(Y,E,0.9,sharma_time,[],[],[],[], [],{'WT','Mutant'},'plot');
+% % set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% hold on
+% y = groa_tmp./max(sharma_values(:,i));
+% h = plot(t,y,'linewidth',4,'color','k');
+% yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+% legend([res.bars,h],{'WT','Mutant','Sim'},'Location','NorthWest');
+% ylabel('Normalized to maximum of 1');
+% xlabel('Time (hours)');
+% title('GROA (Sharma{\it et al.} 2009)');
+% hold off
+% set(gcf,'name','GROA');
+% hgexport(gcf,'images/GROA.jpg',s);
+
+figure;
+i = find(strcmp(sharma_componentNames,'IL18'));
+j = find(strcmp(sharma_mutant_componentNames,'IL18'));
+Y = [norm_sharma_values(1:end,i) norm_sharma_mutant_values(1:end,j)];
+E = [norm_sharma_maxvalues(1:end,i)-norm_sharma_values(1:end,i) norm_sharma_mutant_maxvalues(1:end,j)-norm_sharma_mutant_values(1:end,j)];
+res = barweb(Y,E,0.9,sharma_time,[],[],[],[], [],{'WT','Mutant'},'plot');
+y = il18_tmp./max(sharma_values(:,i));
+hold on
+h = plot(t,y,'linewidth',4,'color','k');
+hold off
+yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
+legend([res.bars,h],{'WT','Mutant','Sim'},'Location','NorthWest');
+ylabel('Normalized to maximum of 1');
+xlabel('Time (hours)');
+title('IL-18 (Sharma{\it et al.} 2009)');
+hold off
+set(gcf,'name','IL18');
+hgexport(gcf,'images/IL18.jpg',s);
+
+% figure;
+% i = find(strcmp(sharma_componentNames,'IFNG'));
+% j = find(strcmp(sharma_mutant_componentNames,'IFNG'));
+% Y = [norm_sharma_values(1:end,i) norm_sharma_mutant_values(1:end,j)];
+% E = [norm_sharma_maxvalues(1:end,i)-norm_sharma_values(1:end,i) norm_sharma_mutant_maxvalues(1:end,j)-norm_sharma_mutant_values(1:end,j)];
+% res = barweb(Y,E,0.9,sharma_time,[],[],[],[], [],{'WT','Mutant'},'plot');
+% % set(res.bars,'facecolor',[0.7,0.7,0.7]);
+% legend([res.bars],{'WT','Mutant'},'Location','NorthWest');
+% ylabel('Normalized to maximum of 1');
+% xlabel('Time (hours)');
+% title('IFN-\gamma (Sharma{\it et al.} 2009)');
+% hold off
+% set(gcf,'name','IFNG');
+% hgexport(gcf,'images/IFNG.jpg',s);

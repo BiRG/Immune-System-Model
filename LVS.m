@@ -33,7 +33,7 @@ KLYSDC = 10
 KMIGMONOBLOOD_INFLAMMATORY = 0.1      % Increase in influx per MCP-1 or MCP-3
 
 % Macrophage
-CHEMOI = 0.5e-8 % 0.25e2                 % chemotactic index (fit, unitless)
+CHEMOI = 0.1e-7 % 0.25e2                 % chemotactic index (fit, unitless)
 KDEGMAX = 0.3
 
 % Dendritic cell
