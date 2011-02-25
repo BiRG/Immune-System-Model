@@ -3,7 +3,7 @@
 ! Cell surface receptors allow neutrophils to detect chemical gradients of cytokines
 RrecN = (krecN + krecN_inflammatory*GROA/(P50_GROA_N + GROA))*N0
 RdeathN = kdegN*N
-RinfN = RPhN*(N/(N+NP))*N ! Compute the fraction of pathogens being engulfed by non-infected
+RinfN = RPhN1         ! pathogens being engulfed by non-infected
 N = integ(-RdeathN + RrecN - RinfN,N0)
 
 !--------------------------------------------------------------------------
@@ -13,7 +13,9 @@ NP = integ(RinfN - RdeathNP,0)
 
 !--------------------------------------------------------------------------
 ! Pathogen engulfed by Neutrophil (N)
-RPhN = 2*P50_rhoP_N*(rhoP/(rhoP + P50_rhoP_N))*kAreaN*(NP+N) ! Units: P/s ... pathogens engulfed/s
+RPhN1 = 2*P50_rhoP_N*(rhoP/(rhoP + P50_rhoP_N))*kAreaN*N ! Units: P/s ... pathogens engulfed/s by uninfected
+RPhN2 = 2*P50_rhoP_N*(rhoP/(rhoP + P50_rhoP_N))*kAreaN*NP ! Units: P/s ... pathogens engulfed/s by infected
+RPhN = RPhN1 + RPhN2
 RLysN = kLysN*PN ! Destroyed by infected neutrophil
 ! Ignore this for now - Paul
 ! RRepPN = kRep*PN ! Replicating inside the neutrophil

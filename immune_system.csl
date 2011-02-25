@@ -34,6 +34,12 @@ constant kgenGROA_Mono = 0.05
 constant kgenGROA_ATII = 0.01
 constant P50_GROA_N = 800
 
+! IL-18
+constant kgenIL18 = 0.02
+
+!IL-1b
+constant kgenIL1b = 0.01
+
 ! IFNG
 constant P50_IFNG_M = 100
 
@@ -134,6 +140,7 @@ PperN = PN/N
 include 'MCP3.csl'
 include 'GROA.csl'
 include 'IL18.csl'
+include 'IL1B.csl'
 
 !--------------------------------------------------------------------------
 ! Cells
@@ -147,8 +154,9 @@ INCLUDE 'N.csl'
 
 !--------------------------------------------------------------------------
 ! Natural killer cells
+! anti-inflamm is IL-10 here I think - ceh
 RdeathNK = kdegNK*NK + kdegNK_anti_inflammatory*AIC/(P50_anti_inflammatory + AIC)*NK
-RrecNK = krecNK*NK0 + krecNK_inflammatory*IC/(P50_IC_NK + IC)*NK
+RrecNK = krecNK*NK0 + krecNK_inflammatory*IL1B/(P50_IC_NK + IL1B)*NK
 NK = integ(RrecNK - RdeathNK,NK0)
 
 !--------------------------------------------------------------------------
