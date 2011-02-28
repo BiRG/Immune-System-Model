@@ -21,6 +21,7 @@ data{end+1} = create_structure(sharma_data{2}); % WT
 sdata = struct(sharma_data{2});
 data{end}.name = sprintf('%s: %s',sdata.name,sdata.notes);
 data{end}.sdata = sdata;
+
 % mares_data = SBmeasurement('datasets/Mares data for sbtoolbox.xls');
 % data{4} = create_structure(mares_data{1});
 % sdata = struct(mares_data{1});
@@ -104,6 +105,7 @@ for k = 1:length(unique_notes)
         for i = 1:length(inxs)
             if ~isempty(find(inxs(i) == ixs(1,:)))
                 heat_data(i,j) = 1;
+                heat_data(i,j) = length(data{inxs(i)}.sdata.time)
             end
         end
     end

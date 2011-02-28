@@ -26,12 +26,10 @@ constant P50_IC_Mono = 20
 constant P50_IC_NK = 20
 
 ! MCP-3
-constant kgenMCP3_Mono = 0.2
-constant kgenMCP3_ATII = 0.02
+constant kgenMCP3 = 0.2
 
 ! GROA
-constant kgenGROA_Mono = 0.05
-constant kgenGROA_ATII = 0.01
+constant kgenGROA = 0.05
 constant P50_GROA_N = 800
 
 ! IL-18
@@ -155,6 +153,7 @@ INCLUDE 'N.csl'
 !--------------------------------------------------------------------------
 ! Natural killer cells
 ! anti-inflamm is IL-10 here I think - ceh
+AIC = 1  ! place-holder for anti-inflammatory cytokine (IL-10 released by CTL?)
 RdeathNK = kdegNK*NK + kdegNK_anti_inflammatory*AIC/(P50_anti_inflammatory + AIC)*NK
 RrecNK = krecNK*NK0 + krecNK_inflammatory*IL1B/(P50_IC_NK + IL1B)*NK
 NK = integ(RrecNK - RdeathNK,NK0)

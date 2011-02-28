@@ -23,7 +23,7 @@ rhop = results(:,7);
 n = results(:,8);
 pn = results(:,9);
 np = results(:,10);
-ic = results(:,11);
+il1b = results(:,11);
 aic = results(:,12);
 dca = results(:,13);
 mp = results(:,14);
@@ -242,6 +242,11 @@ yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('IL18');
 hold off
 set(gcf,'name','IL18');
+
+figure;
+plot(t,nk,'linewidth',4,'color','k');
+title('NK');
+set(gcf,'name','NK');
 
 
 % legend('M','Exp M','MP','Exp MP');
