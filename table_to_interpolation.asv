@@ -1,0 +1,79 @@
+% Use interpolation to fill in some of the values
+
+close all
+
+set(0,'DefaultFigureWindowStyle','docked');
+
+fid = fopen('TBL_Hall.csl','w');
+0,1*24,3*24,7*24,10*24,14*24,0,2204.365,81366.88,902036.3,1271972,786.1808
+
+
+
+figure;
+t = linspace(0,72,100);
+P_experimental_tbl_hall = [0,24,72,0,1e6,1e8];
+output_table(fid,t,P_experimental_tbl_hall,'P_experimental');
+
+figure;
+t = linspace(0,120,200);
+MCP3_tbl_hall = [0,6,24,72,120,0,33,88,11630,16319];
+output_table(fid,t,MCP3_tbl_hall,'MCP3');
+
+figure;
+t = linspace(0,120,200);
+GROA_tbl_hall = [0,6,24,72,120,0,32,211,4458.7,5205.4];
+output_table(fid,t,GROA_tbl_hall,'GROA');
+
+figure;
+t = linspace(0,120,200);
+IL1B_tbl_hall = [0,6,24,72,120,0,102.7,1357,6723.3,4064.7];
+output_table(fid,t,IL1B_tbl_hall,'IL1B');
+
+figure;
+t = linspace(0,120,200);
+IL18_tbl_hall = [0,6,24,72,120,0,44.2,946.7,8283.3,14926.7];
+output_table(fid,t,IL18_tbl_hall,'IL18');
+
+figure;
+t = linspace(0,120,200);
+IFNG_tbl_hall = [0,6,24,72,120,0,3.2125,12.1,639.8,138.3];
+output_table(fid,t,IFNG_tbl_hall,'IFNG');
+
+fclose(fid);
+
+fid = fopen('TBL_Hall.csl','w');
+0,1*24,3*24,7*24,10*24,14*24,0,2204.365,81366.88,902036.3,1271972,786.1808
+
+
+
+figure;
+t = linspace(0,72,100);
+P_experimental_tbl_hall = [0,24,72,0,1e6,1e8];
+output_table(fid,t,P_experimental_tbl_hall,'P_experimental');
+
+figure;
+t = linspace(0,120,200);
+MCP3_tbl_hall = [0,6,24,72,120,0,33,88,11630,16319];
+output_table(fid,t,MCP3_tbl_hall,'MCP3');
+
+figure;
+t = linspace(0,120,200);
+GROA_tbl_hall = [0,6,24,72,120,0,32,211,4458.7,5205.4];
+output_table(fid,t,GROA_tbl_hall,'GROA');
+
+figure;
+t = linspace(0,120,200);
+IL1B_tbl_hall = [0,6,24,72,120,0,102.7,1357,6723.3,4064.7];
+output_table(fid,t,IL1B_tbl_hall,'IL1B');
+
+figure;
+t = linspace(0,120,200);
+IL18_tbl_hall = [0,6,24,72,120,0,44.2,946.7,8283.3,14926.7];
+output_table(fid,t,IL18_tbl_hall,'IL18');
+
+figure;
+t = linspace(0,120,200);
+IFNG_tbl_hall = [0,6,24,72,120,0,3.2125,12.1,639.8,138.3];
+output_table(fid,t,IFNG_tbl_hall,'IFNG');
+
+fclose(fid);

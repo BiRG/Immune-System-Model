@@ -1,0 +1,36 @@
+!--------------------------------------------------------------------------
+! MONOCYTE in blood (MonoBlood)
+RrecMonoBlood = krecMonoBlood*MonoBlood0
+RdeathMonoBlood = kdegMonoBlood*MonoBlood
+RmigMonoBlood = kmigMonoBlood*MonoBlood + kmigMonoBlood_inflammatory*MCP3/(MCP3 + MAX_MCP3_Mono/2)*MonoBlood
+RMonoBlood = RrecMonoBlood - RdeathMonoBlood - RmigMonoBlood
+MonoBlood = integ(RMonoBlood,MonoBlood0)
+
+!--------------------------------------------------------------------------
+! MONOCYTE in between blood and tissue (MonoBloodTissue)
+RMonoBloodTissue = RmigMonoBlood - RmigMonoBlood/MonoBlood*MonoBloodTissue ! By dividing by the MonoBlood we get a rate constant
+MonoBloodTissue = integ(RMonoBloodTissue,MonoBloodTissue0)
+
+!--------------------------------------------------------------------------
+! MONOCYTE in tissue (Mono)
+RdiffMono = (kdiffMonoDC + kdiffMonoM)*Mono
+RrecMono = RmigMonoBlood/MonoBlood*MonoBloodTissue ! By dividing by the MonoBlood we get a rate constant
+RdeathMono = kdegMono*Mono
+RinfMono = RPhMono1          ! pathogens being engulfed by non-infected
+RMono = RrecMono - RdiffMono - RdeathMono - RinfMono
+Mono = integ(RMono,Mono0)
+
+!--------------------------------------------------------------------------
+! Monocyte infected by pathogen
+RdeathMonoP = kdegMono*MonoP
+MonoP = integ(RinfMono - RdeathMonoP,0)
+
+!--------------------------------------------------------------------------
+! Pathogen engulfed by Monocyte (Mono)
+RPhMono1 = MAX_rhoP_Mono*rhoP/(MAX_rhoP_Mono/2 + rhoP)*Mono*kAreaMono ! uninfected encounter rate (P/t)
+RPhMono2 = MAX_rhoP_Mono*rhoP/(MAX_rhoP_Mono/2 + rhoP)*MonoP*kAreaMono ! infected encounter rate (P/t)
+RPhMono = RPhMono1 + RPhMono2
+RLysMono = kLysMono*PMono ! Destroyed by infected neutrophil
+PMono = integ(RPhMono - RLysMono - RdeathMonoP*PMono/max(MonoP,1),0) 
+
+

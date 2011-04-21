@@ -1,12 +1,13 @@
-
-% put initial cell numbers hall.m, or in mouse m-file?
-M0 = 1.75e6
-DC0 = 4.5e5 
+% Intial conditions
+M0 = 954907 + 763323.9498
+DC0 = 1.41E+05 + 227996.8762
 NK0 = 340
-N0 = 6e5
-MONO0 = 5e5
-%MonoBlood0 = Mono0
-%MonoBloodTissue0 = Mono0
+N0 = 6.26E+05
+MONO0 = 5.90E+05
+ATII0 = 2.81E+06
+%MONOBLOOD0 = MONO0
+%MONOBLOODTISSUE0 = MONO0
+
 LUSA = 500 % cm^2 for mouse (RDDR, EPA)
 
 KRECNK = 0.005        % basal recruitment, replication/cell division 
@@ -30,5 +31,5 @@ MVEL = 0.02                     % cm/hr (Stober et al., 1989)
 MDIAM = 15.0e-4                 % mac diameter (cm)
 % Dendritic cell
 %kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		% must be in steady state
-KAREADC = 5e-5
+KAREADC = 4.2e-5
 %kmigDC = 0.1*kdiffMonoDC*Mono0/DC0     % Must be balanced in steady state

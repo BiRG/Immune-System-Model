@@ -1,0 +1,3 @@
+
+IL1b_LUNG = integ(kgenIL1b*MP_LUNG, 0)
+
