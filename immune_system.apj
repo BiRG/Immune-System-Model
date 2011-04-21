@@ -4,6 +4,14 @@
   <mscript name="woolard.m" location="." />
   <mscript name="mouse.m" location="." />
   <mscript name="U112.m" location="." />
-  <exe name="immune_system.dll" location="." />
   <resultsfolder name="" location="." />
+  <ProjectOptions>
+    <GlobalTranslatorConfigName>GNU C (Release)</GlobalTranslatorConfigName>
+    <TranslatorIncludeLibrarySettings>
+      <CslIncludeFileEntries>csl_files</CslIncludeFileEntries>
+      <CppIncludeFileEntries />
+      <FortranIncludeFileEntries />
+      <LibraryEntries />
+    </TranslatorIncludeLibrarySettings>
+  </ProjectOptions>
 </project>
