@@ -1,16 +1,17 @@
 !--------------------------------------------------------------------------
 ! Aveolar type II in tissue (ATII)
-RinfATII = RPhATII*(ATII/(ATII+ATIIP))*ATII ! Compute the fraction of pathogens being engulfed by non-infected
-RATII = -RinfATII
+RATII = -RinfATII1
 ATII = integ(RATII,ATII0)
 
 !--------------------------------------------------------------------------
 ! ATII infected by pathogen
-RdeathATIIP =  kdegATIIP*ATIIP
-ATIIP = integ(RinfATII - RdeathATIIP,0)
+RdeathATIIP =  kdegATII*ATIIP
+ATIIP = integ(RinfATII1 - RdeathATIIP,0)
 
 !--------------------------------------------------------------------------
 ! Pathogen engulfed by ATII
-RPhATII = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*(ATII + ATIIP)*kPhATII ! encounter rate (P/t)
-PATII = integ(RPhATII - RdeathATIIP*PATII/max(ATIIP,1),0)
+RPhATII1 = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*kPhATII*ATII  ! Units: P/s ... pathogens engulfed/s by uninfected
+RPhATII2 = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*kPhATII*ATIIP ! Units: P/s ... pathogens engulfed/s by infected
 
+RPhATII = RPhATII1 + RPhATII2
+PATII = integ(RPhATII - RdeathATIIP*PATII/max(ATIIP,1),0)

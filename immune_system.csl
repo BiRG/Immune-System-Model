@@ -3,7 +3,7 @@ PROGRAM
 	INITIAL
 ! Initial values
 M0 = 954907 + 763323.9498
-DC0 = 200533.58306804 + 227996.8762
+DC_LUNG0 = 200533.58306804 + 227996.8762
 NK0 = 340
 N0 = 6.26E+05
 MONO0 = 5.90E+05
@@ -103,10 +103,11 @@ constant kdegMax = 0.3
 constant P50_rhoP_M = 3e3
 
 ! Dendritic cell
-kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		! must be in steady state
-constant kAreaDC = 4.2e-5
-kmigDC = 0.1*kdiffMonoDC*Mono0/DC0     ! Must be balanced in steady state
-kmigDCA = 30*kmigDC
+kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 							! must be in steady state
+kmigDC_BLDtoLUNG = 0.1*kdiffMonoDC*Mono0/DC0     ! Must be balanced in steady state
+constant kAreaDC_LUNG = 4.2e-5
+kmigDC_LUNGtoLYMPH = 0.1*kdiffMonoDC*Mono0/DC0
+kmigDCA_LUNGtoLYMPH = 30*kmigDC_LUNGtoLYMPH
 constant P50_rhoP_DC = 1500
 
 	END ! INITIAL

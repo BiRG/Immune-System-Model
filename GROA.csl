@@ -1,4 +1,4 @@
 !--------------------------------------------------------------------------
 ! GROA
-GROA_tmp = integ(kgenGROA*MP,0)
+GROA_LUNG = integ(kgenGROA*MP_LUNG,0)
 

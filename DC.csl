@@ -1,17 +1,24 @@
 !--------------------------------------------------------------------------
+! They can also be found in an immature state in the blood. Once activated,
+! they migrate to the lymph nodes where they interact with T cells and B 
+! cells to initiate and shape the adaptive immune response.
+
+!--------------------------------------------------------------------------
 ! Dendritic cells
-RdeathDC = kdegDC*DC
-RmigDC = kmigDC*DC
-RrecDC = kdiffMonoDC*Mono
-RactDC = 2*P50_rhoP_DC*(rhoP/(rhoP + P50_rhoP_DC))*kAreaDC*DC
-RDC = RrecDC - RmigDC - RdeathDC - RactDC
-DC = integ(RDC,DC0)
+
+! DC_BLD
+RDC_BLD = -kdegDC*DC_BLD + kdiffMonoDC*Mono + -kmigDC_BLDtoLUNG*DC_BLD
+DC_BLD = integ(RDC_BLD,DC_LUNG0)
+
+! DC_LUNG
+RactDC = -2*P50_rhoP_DC_LUNG*(rhoP/(rhoP + P50_rhoP_DC_LUNG))*kAreaDC_LUNG*DC_LUNG
+RDC_LUNG = kmigDC_BLDtoLUNG*DC_BLD + -kmigDC_LUNGtoLYMPH*DC_LUNG + -kdegDC*DC_LUNG + RactDC
+DC_LUNG = integ(RDC_LUNG,DC_LUNG0)
 
 !--------------------------------------------------------------------------
 ! Dendritic cells activated by pathogen
-RdeathDCA = kdegDC*DCA
-RmigDCA = kmigDCA*DCA
-DCA = integ(RactDC - RdeathDCA - RmigDCA,0)
+RDCA_LUNG = -kdegDC*DCA_LUNG + -kmigDCA_LUNGtoLYMPH*DCA_LUNG + -RactDC
+DCA_LUNG = integ(RDCA_LUNG,0)
 
 !--------------------------------------------------------------------------
 ! Pathogen engulfed by Dendritic (DC)
