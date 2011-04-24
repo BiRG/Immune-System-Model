@@ -1,0 +1,30 @@
+!--------------------------------------------------------------------------
+! Macrophage
+
+! M_BLD
+RM_BLD = kdiffMonoM*Mono - kmigM_BLDtoSURFACE*M_BLD - kdegM*M_BLD
+M_BLD = integ(RM_BLD,M_BLD0)
+
+! M_SURFACE
+RinfM = RPhM1   ! pathogens being engulfed by uninfected
+RM_SURFACE = kmigM_BLDtoSURFACE*M_BLD - kdegM*M_SURFACE - RinfM
+M_SURFACE = integ(RM_SURFACE,M_BLD0)
+
+!--------------------------------------------------------------------------
+! Macrophage infected by pathogen
+RdeathMP = (kdegM + kdegMP_SURFACE)*MP_SURFACE
+RmigMP = kmigMP_SURFACEtoLYMPH*MP_SURFACE
+MP_SURFACE = integ(RinfM - RdeathMP - RmigMP,0)
+
+!--------------------------------------------------------------------------
+! PATHOGEN engulfed by MACROPHAGE (PM)
+! Split phagocytosis into 2 terms to approximate infection rate with RPhM1.  Assumes that a macrophage engulfs at most 1 per time step.
+RPhM1 = (1+IFNG/(IFNG + P50_IFNG_M))*2*P50_rhoP_M*(rhoP/(rhoP + P50_rhoP_M))*M_SURFACE*CHEMOI*Mvel*MDiam ! encounter rate uninfected Mac (P/t)
+RPhM2 = (1+IFNG/(IFNG + P50_IFNG_M))*2*P50_rhoP_M*(rhoP/(rhoP + P50_rhoP_M))*MP_SURFACE*CHEMOI*Mvel*MDiam ! encounter rate infected Mac (P/t)
+RPhM = RPhM1 + RPhM2
+RLysPM = kLysPM*PM !min(M,PM)/(PM/max(M,1)+P50Lys)  ! min(M,PM) is estimate of the number of M that have engulfed P.
+! Ignored for now
+!RRepPM = kRep*PM
+!RRelM = RdeathM*PM/M  ! Released from death of M
+PM = integ(RPhM - RLysPM,0)
+

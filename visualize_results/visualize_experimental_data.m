@@ -1,22 +1,27 @@
 close all
 
-% % addpath('kmedoids');
-% hall_data = SBmeasurement('datasets/Hall data for sbtoolbox.xls');
-% data = {};
-% data{1} = create_structure(hall_data);
-% sdata = struct(hall_data);
-% data{1}.name = sprintf('%s: %s',sdata.name,sdata.notes);
-% data{1}.sdata = sdata;
-% woolard_data = SBmeasurement('datasets/Woolard data for sbtoolbox.xls');
-% data{2} = create_structure(woolard_data);
-% sdata = struct(woolard_data);
-% data{2}.name = sprintf('%s: %s',sdata.name,sdata.notes);
-% data{2}.sdata = sdata;
-% sharma_data = SBmeasurement('datasets/Sharma data for sbtoolbox.xls');
-% data{3} = create_structure(sharma_data{2}); % WT
-% sdata = struct(sharma_data{2});
-% data{3}.name = sprintf('%s: %s',sdata.name,sdata.notes);
-% data{3}.sdata = sdata;
+data = {};
+
+hall_data = SBmeasurement('datasets/Hall data for sbtoolbox.xls');
+for i = 1:length(hall_data)
+    data{end+1} = create_structure(hall_data{i});
+    sdata = struct(hall_data{i});
+    data{end}.name = sprintf('%s: %s',sdata.name,sdata.notes);
+    data{end}.sdata = sdata;
+end
+
+woolard_data = SBmeasurement('datasets/Woolard data for sbtoolbox.xls');
+data{end+1} = create_structure(woolard_data);
+sdata = struct(woolard_data);
+data{end}.name = sprintf('%s: %s',sdata.name,sdata.notes);
+data{end}.sdata = sdata;
+
+sharma_data = SBmeasurement('datasets/Sharma data for sbtoolbox.xls');
+data{end+1} = create_structure(sharma_data{2}); % WT
+sdata = struct(sharma_data{2});
+data{end}.name = sprintf('%s: %s',sdata.name,sdata.notes);
+data{end}.sdata = sdata;
+
 % mares_data = SBmeasurement('datasets/Mares data for sbtoolbox.xls');
 % data{4} = create_structure(mares_data{1});
 % sdata = struct(mares_data{1});
@@ -79,26 +84,28 @@ end
 % set(0,'DefaultFigureWindowStyle','normal');
 
 % Grouped by notes
-set(0,'DefaultFigureWindowStyle','docked');
+figure;
 for k = 1:length(unique_notes)
+    subplot(1,length(unique_notes),k);
     inxs = ht_unique_notes.get(unique_notes{k});
     heat_data = zeros(length(inxs),length(keys)); % rows are datasets, columns are variables
-    cnt = 0;
-    for i = 1:length(inxs)
-        for j = 1:length(keys)
-            if mod(cnt,2) == 0
-                heat_data(i,j) = 1;
-            end
-            cnt = cnt + 1;
-        end
-    end
+%     cnt = 0;
+%     for i = 1:length(inxs)
+%         for j = 1:length(keys)
+%             if mod(cnt,2) == 0
+%                 heat_data(i,j) = 1;
+%             end
+%             cnt = cnt + 1;
+%         end
+%     end
     xlabels = {};
     for j = 1:length(keys)
         xlabels{j} = keys{j};
         ixs = ht.get(keys{j});
         for i = 1:length(inxs)
-            if ~isempty(find(inxs(i) == ixs))
+            if ~isempty(find(inxs(i) == ixs(1,:)))
                 heat_data(i,j) = 1;
+                heat_data(i,j) = length(data{inxs(i)}.sdata.time)
             end
         end
     end
@@ -106,10 +113,10 @@ for k = 1:length(unique_notes)
     for i = 1:length(inxs)
         ylabels{end+1} = data{inxs(i)}.sdata.name;
     end
-    hm = heatmap(heat_data','columnlabels',ylabels,'rowlabels',xlabels,'columnlabelslocation','top','colormap','gray');
-    addTitle(hm,unique_notes{k});
+    heatmap(heat_data',ylabels,xlabels,[],'gridlines','-','colormap','red');
+    title(unique_notes{k});
 end
-set(0,'DefaultFigureWindowStyle','normal');
+
 
 %     E = [maxvalues_WT(1:end,i)-values_WT(1:end,i) maxvalues_mutant(1:end,i)-values_mutant(1:end,i)];
 %     hs = barweb(Y,E,0.9,times_WT(:,i),[],[],[],[], [],{'WT','Mutant'},'plot');

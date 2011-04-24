@@ -1,0 +1,26 @@
+!--------------------------------------------------------------------------
+! Aveolar type II in tissue (ATII)
+
+! ATII_BLD
+RmigATII_BLDtoSURFACE = (kmigATII_BLDtoSURFACE + kmigATII_BLDtoSURFACE_inflammatory*GROA_BLD/(P50_GROA_ATII + GROA_BLD))*ATII_BLD
+ATII_BLD = integ(-kdegN*ATII_BLD + krecATII_BLD*N0 - RmigATII_BLDtoSURFACE,ATII_BLD0)
+
+! ATII_SURFACE
+ATII_SURFACE = integ(-kdegN*ATII_SURFACE + krecATII_BLD*N0 + RmigATII_BLDtoSURFACE,ATII_SURFACE0)
+
+RdeathN = kdegN*N
+RinfN = RPhN1         ! pathogens being engulfed by non-infected
+N = integ(-RdeathN + RrecN - RinfN,N0)
+
+!--------------------------------------------------------------------------
+! Neutrophil infected by pathogen
+ATIIP_SURFACE = integ(RinfN - kdegN*ATIIP_SURFACE,0)
+
+!--------------------------------------------------------------------------
+! Pathogen engulfed by ATII
+RPhATII1 = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*kPhATII*ATII_SURFACE ! Units: P/s ... pathogens engulfed/s by uninfected
+RPhATII2 = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*kPhATII*ATIIP_SURFACE ! Units: P/s ... pathogens engulfed/s by infected
+RPhN = RPhATII1 + RPhATII2
+RLysATII = kLysATII*PATII ! Destroyed by infected neutrophil
+PATII = integ(RPhN - RLysATII,0) 
+

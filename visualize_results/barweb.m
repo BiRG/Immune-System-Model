@@ -110,8 +110,9 @@ elseif nargin == 11
 	legend_type = 'plot';
 end
 
-change_axis = 0;
+% change_axis = 0;
 ymax = 0;
+ymin = 0;
 
 if size(barvalues,1) ~= size(errors,1) || size(barvalues,2) ~= size(errors,2)
 	error('barvalues and errors matrix must be of same dimension');
@@ -132,7 +133,7 @@ else
 	end
 	
 	% Plot bars
-	handles.bars = bar(barvalues, width,'edgecolor','k', 'linewidth', 2);
+	handles.bars = bar(groupnames,barvalues, width,'edgecolor','k', 'linewidth', 2);
 	hold on
 	if ~isempty(bw_colormap)
 		colormap(bw_colormap);
@@ -144,22 +145,32 @@ else
 		legend boxoff;
 	else
 		handles.legend = [];
-	end
+    end
 	
+    
 	% Plot erros
-	for i = 1:numbars
-		x =get(get(handles.bars(i),'children'), 'xdata');
-		x = mean(x([1 3],:));
-		handles.errors(i) = errorbar(x(i), barvalues(:,i), errors(:,i), 'k', 'linestyle', 'none', 'linewidth', 2);
-		ymax = max([ymax; barvalues(:,i)+errors(:,i)]);
-	end
+    if length(handles.bars) > 1
+        for i = 1:numbars
+            x =get(get(handles.bars(i),'children'), 'xdata');
+            x = mean(x([1 3],:));       
+            handles.errors(i) = errorbar(x, barvalues(:,i), errors(:,i), 'k', 'linestyle', 'none', 'linewidth', 2);
+            ymax = max([ymax; barvalues(:,i)+errors(:,i)]);
+            ymin = min([ymin; barvalues(:,i)-errors(:,i)]);
+        end
+    else
+		x =get(get(handles.bars,'children'), 'xdata');
+		x = mean(x([1 3],:));       
+        handles.errors = errorbar(x, barvalues, errors, 'k', 'linestyle', 'none', 'linewidth', 2);
+		ymax = max([ymax; barvalues'+errors']);
+        ymin = min([ymin; barvalues'-errors']);
+    end
 	
 	if error_sides == 1
 		set(gca,'children', flipud(get(gca,'children')));
 	end
 	
-	ylim([0 ymax*1.1]);
-	xlim([0.5 numgroups-change_axis+0.5]);
+ 	ylim([min([0,ymin*1.1]) ymax*1.1]);
+% 	xlim([0.5 numgroups-change_axis+0.5]);
 	
 	if strcmp(legend_type, 'axis')
 		for i = 1:numbars
@@ -181,7 +192,8 @@ else
 		ylabel(bw_ylabel, 'fontsize',14);
 	end
 	
-	set(gca, 'xticklabel', groupnames, 'box', 'off', 'ticklength', [0 0], 'fontsize', 12, 'xtick',1:numgroups, 'linewidth', 2,'xgrid','off','ygrid','off');
+% 	set(gca, 'xticklabel', groupnames, 'box', 'off', 'ticklength', [0 0], 'fontsize', 12, 'xtick',1:numgroups, 'linewidth', 2,'xgrid','off','ygrid','off');
+ 	set(gca, 'xticklabel', groupnames, 'box', 'off', 'ticklength', [0 0], 'fontsize', 12, 'linewidth', 2,'xgrid','off','ygrid','off');
 	if ~isempty(gridstatus) && any(gridstatus == 'x')
 		set(gca,'xgrid','on');
 	end

@@ -23,7 +23,7 @@ rhop = results(:,7);
 n = results(:,8);
 pn = results(:,9);
 np = results(:,10);
-ic = results(:,11);
+il1b = results(:,11);
 aic = results(:,12);
 dca = results(:,13);
 mp = results(:,14);
@@ -147,7 +147,7 @@ exp_inxs = find(strcmp(componentNames,'P'));
 % exp_inxs = find(strcmp(componentNames,'M_infected'));
 res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'P'},'plot');
 set(res.bars,'facecolor',[0.7,0.7,0.7]);
-hold ono
+hold on
 plot(t,p_experimental,'linewidth',4,'color','k');
 yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('Pathogen');
@@ -156,7 +156,7 @@ hold off
 
 
 figure;
-subplot(5,1,1);
+subplot(3,1,1);
 exp_inxs = find(strcmp(componentNames,'Mono'));
 % exp_inxs = find(strcmp(componentNames,'M_infected'));
 res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Mono'},'plot');
@@ -168,12 +168,12 @@ yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('Mono');
 set(gcf,'name','M');
 hold off
-subplot(5,1,2);
+subplot(3,1,2);
 y = monoblood;
 plot(t,y,'linewidth',4,'color','k');
 yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('MonoBlood');
-subplot(5,1,3);
+subplot(3,1,3);
 exp_inxs = find(strcmp(componentNames,'Infected_Mono'));
 % exp_inxs = find(strcmp(componentNames,'M_infected'));
 res = barweb(values(:,exp_inxs),E(:,exp_inxs),0.9,time,[],[],[],[], [],{'Infected_Mono'},'plot');
@@ -183,17 +183,7 @@ y = monop;
 plot(t,y,'linewidth',4,'color','k');
 yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('MonoP');
-subplot(5,1,4);
-y = pmono;
-plot(t,y,'linewidth',4,'color','k');
-yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
-title('PMono');
-subplot(5,1,5);
-y = rphmono;
-plot(t,y,'linewidth',4,'color','k');
-yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
-title('RPhMono');
-set(gcf,'name','Mono');
+set(gcf,'name','Momo');
 
 figure;
 plot(t,ifng,'linewidth',4,'color','k');
@@ -252,6 +242,11 @@ yl = ylim; yl(1) = min([yl(1),y']); yl(2) = max([yl(2),y']); ylim(yl);
 title('IL18');
 hold off
 set(gcf,'name','IL18');
+
+figure;
+plot(t,nk,'linewidth',4,'color','k');
+title('NK');
+set(gcf,'name','NK');
 
 
 % legend('M','Exp M','MP','Exp MP');

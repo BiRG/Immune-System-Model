@@ -1,16 +1,6 @@
 PROGRAM
 
 	INITIAL
-! Initial values
-M0 = 954907 + 763323.9498
-DC0 = 200533.58306804 + 227996.8762
-NK0 = 340
-N0 = 6.26E+05
-MONO0 = 5.90E+05
-ATII0 = 2.81E+06
-MonoBlood0 = Mono0
-MonoBloodTissue0 = Mono0
-
 constant LuSA = 500 ! cm^2 for mouse (RDDR, EPA)
 
 !-------------------------------------------------------------------------
@@ -21,12 +11,10 @@ constant LuSA = 500 ! cm^2 for mouse (RDDR, EPA)
 !   NK recruitment is driven by IL1B
 !   NK activation (?) is driven by IL18, which is a surrogate for IFN-alpha and IFN-beta
 !   IFNG enhanced macrophages and is secreted by NK-cells
-constant P50_anti_inflammatory = 100
-constant P50_IC_Mono = 20
-constant P50_IC_NK = 20
 
 ! MCP-3
 constant kgenMCP3 = 0.2
+constant MAX_MCP3_Mono = 50
 
 ! GROA
 constant kgenGROA = 0.05
@@ -41,73 +29,69 @@ constant kgenIL1b = 0.01
 ! IFNG
 constant P50_IFNG_M = 100
 
-! Natural killer cell
-constant krecNK = 0.005        ! basal recruitment, replication/cell division 
-constant krecNK_inflammatory = 0.03
-constant kdegNK = 0.005
-constant kdegNK_anti_inflammatory = 0.04
+!-----------------------------------------------------------------------------
+! Cells
+
+! Dentritic Cells
+DC_SURFACE0 = 200533.58306804 + 227996.8762
+constant kAreaDC_SURFACE = 4.2e-5
+kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 							! must be in steady state
+kmigDC_BLDtoSURFACE = 0.1*kdiffMonoDC*Mono0/DC0     ! Must be balanced in steady state
+kmigDC_SURFACEtoLYMPH = 0.1*kdiffMonoDC*Mono0/DC0
+kmigDCA_SURFACEtoLYMPH = 30*kmigDC_SURFACEtoLYMPH
+constant P50_rhoP_DC_SURFACE = 1500
 
 ! ATII
-constant MAX_rhoP_ATII = 5000000
+ATII_BLD0 = 2.81E+06
+ATII_SURFACE0 = 2.81E+06
+constant kLysATII = 0
 constant kPhATII = 0.3e-13
-constant kdegATIIP = 4
+constant kmigATII_BLDtoSURFACE = 0
+constant kmigATII_BLDtoSURFACE_inflammatory = 0
+krecATII_BLD = 0
 
 ! Neutrophil
-constant krecN = 0.02              ! basal recruitment, replication/cell division 
-constant krecN_inflammatory = 0.1
-constant P50_IC_N = 160
-!constant kdegN_anti_inflammatory = 250
-constant kdegN = 0.02
+N0 = 6.26E+05
 constant kAreaN = 1.8e-13            ! cm*cm/hr
-constant P50_rhoP_N = 1e4
-!constant tau_PN_N = 50
-
-! Pathogens engulfed by neutrophils
-!constant kdeathPN = 0.001
 constant kLysN = 10
-constant P50Lys = 10
-constant kRep = 0.693
+constant kdegN = 0.02
+constant kmigN_BLDtoSURFACE = 0
+constant kmigN_BLDtoSURFACE_inflammatory = 0
+constant krecN_BLD = 0.02              ! basal recruitment, replication/cell division 
 
-! Pathogens engulfed by macrophage
-constant kdeathPM = 0.05
-constant kLys = 10
-
-! Pathogens engulfed by dendritic cells
-constant kLysDC = 10
-
-! Pathogens enguled by monocytes
-constant kLysMono = 10
-
-! Monocytes in tissue
+! Monocytes
+MONO0 = 5.90E+05
+MonoBlood0 = Mono0
+MonoBloodTissue0 = Mono0
+constant kAreaMono = 2e-15
+constant kLysMono = 0
 constant kdegMono = 0               ! Based on half-life
 kdiffMonoM = 0.03                   ! 1/time for a monoctye to differentiate into macrophage (t Mono/M)
 kdiffMonoDC = 0.03                  ! 1/time for a monoctye to differentiate into dendritic cell (t Mono/DC)
-constant MAX_rhoP_Mono = 1e5
-constant kAreaMono = 2e-15
-
-! Monoctyes in blood
 krecMonoBlood = 0.04                  ! 1/time for a monocyte to migrate
 constant kdegMonoBlood = 0
 kmigMonoBlood = krecMonoBlood
 constant kmigMonoBlood_inflammatory = 0.1 ! Increase in influx per MCP-1 or MCP-3
-constant MAX_MCP3_Mono = 50
+constant MAX_rhoP_Mono = 1e5
 
 ! Macrophage
+M0 = 954907 + 763323.9498
+constant kLysPM = 0
 constant kdegM = 0
-kmigM = kdiffMonoM*Mono0/M0      				! Must be balanced in steady state
-kmigMP = 2*kmigM
+kmigM_BLDtoSURFACE = kdiffMonoM*Mono0/M0      				! Must be balanced in steady state
+kmigMP_SURFACEtoLYMPH = 2*kmigM_BLDtoSURFACE
 constant Mvel = 0.02                     ! cm/hr (Stober et al., 1989)
 constant MDiam = 15.0e-4                 ! mac diameter (cm)
-constant CHEMOI = 1e-8 	              ! chemotactic index (fit, unitless)
-constant kdegMax = 0.3
+constant CHEMOI = 1e-8 	                ! chemotactic index (fit, unitless)
 constant P50_rhoP_M = 3e3
+constant P50Lys = 0
 
-! Dendritic cell
-kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		! must be in steady state
-constant kAreaDC = 4.2e-5
-kmigDC = 0.1*kdiffMonoDC*Mono0/DC0     ! Must be balanced in steady state
-kmigDCA = 30*kmigDC
-constant P50_rhoP_DC = 1500
+! Natural killer cell
+NK0 = 340
+constant krecNK = 0.005        ! basal recruitment, replication/cell division 
+constant krecNK_inflammatory = 0.03
+constant kdegNK = 0.005
+constant kdegNK_anti_inflammatory = 0.04
 
 	END ! INITIAL
 

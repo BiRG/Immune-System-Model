@@ -6,4 +6,4 @@
 *.cpp
 *.csi
 *.obj
-test
+makefile

@@ -1,0 +1,77 @@
+Enter a directory to search: Unique list of states:
+           (-RdeathN + RrecN - RinfN,N0): ATII.csl,N.csl
+(-kdegN*ATII_BLD + krecATII_BLD*N0 - RmigATII_BLDtoSURFACE,ATII_BLD0): ATII.csl
+(-kdegN*ATII_SURFACE + krecATII_BLD*N0 + RmigATII_BLDtoSURFACE,ATII_LUNG0): ATII.csl
+(-kdegN*N_BLD + krecN_BLD*N0 - RmigN_BLDtoSURFACE,N_BLD0): N.csl
+(-kdegN*N_SURFACE + krecN_BLD*N0 + RmigN_BLDtoSURFACE,N_LUNG0): N.csl
+                        (RDCA_SURFACE,0): DC.csl
+                   (RDC_BLD,DC_SURFACE0): DC.csl
+               (RDC_SURFACE,DC_SURFACE0): DC.csl
+                         (RM_BLD,M_BLD0): M.csl
+                     (RM_SURFACE,M_BLD0): M.csl
+                           (RMono,Mono0): Mono.csl
+                 (RMonoBlood,MonoBlood0): Mono.csl
+   (RMonoBloodSurface,MonoBloodSurface0): Mono.csl
+                       (RPhM - RLysPM,0): M.csl
+(RPhMono - RLysMono - RdeathMonoP*PMono/max(MonoP,1),0): Mono.csl
+                     (RPhN - RLysATII,0): ATII.csl
+                        (RPhN - RLysN,0): N.csl
+           (RinfM - RdeathMP - RmigMP,0): M.csl
+              (RinfMono - RdeathMonoP,0): Mono.csl
+         (RinfN - kdegN*ATIIP_SURFACE,0): ATII.csl
+            (RinfN - kdegN*NP_SURFACE,0): N.csl
+                    (kgenGROA*MP_LUNG,0): GROA.csl
+              (kgenIL18*ATIIP_SURFACE,0): IL18.csl
+                (kgenIL1b*MP_SURFACE, 0): IL1b.csl
+                 (kgenMCP3*MP_SURFACE,0): MCP3.csl
+                        ATIIP_SURFACE, 0: ATII.csl
+                     ATII_BLD, ATII_BLD0: ATII.csl
+                ATII_SURFACE, ATII_LUNG0: ATII.csl
+                          DCA_SURFACE, 0: DC.csl
+                     DC_BLD, DC_SURFACE0: DC.csl
+                 DC_SURFACE, DC_SURFACE0: DC.csl
+                            GROA_LUNG, 0: GROA.csl
+                         IL18_SURFACE, 0: IL18.csl
+                         IL1b_SURFACE, 0: IL1b.csl
+                         MCP3_SURFACE, 0: MCP3.csl
+                           MP_SURFACE, 0: M.csl
+                           M_BLD, M_BLD0: M.csl
+                       M_SURFACE, M_BLD0: M.csl
+                             Mono, Mono0: Mono.csl
+                   MonoBlood, MonoBlood0: Mono.csl
+     MonoBloodSurface, MonoBloodSurface0: Mono.csl
+                                MonoP, 0: Mono.csl
+                                   N, N0: ATII.csl,N.csl
+                           NP_SURFACE, 0: N.csl
+                           N_BLD, N_BLD0: N.csl
+                      N_SURFACE, N_LUNG0: N.csl
+                                PATII, 0: ATII.csl
+                                   PM, 0: M.csl
+                                PMono, 0: Mono.csl
+                                   PN, 0: N.csl
+
+Unique list of k constants:
+                         kAreaDC_SURFACE: DC.csl
+                                   kdegM: M.csl
+                          kdegMP_SURFACE: M.csl
+                                kdegMono: Mono.csl
+                           kdegMonoBlood: Mono.csl
+                                   kdegN: ATII.csl,N.csl
+                             kdiffMonoDC: DC.csl,Mono.csl
+                              kdiffMonoM: M.csl,Mono.csl
+                                kgenGROA: GROA.csl
+                                kgenIL18: IL18.csl
+                                kgenIL1b: IL1b.csl
+                                kgenMCP3: MCP3.csl
+                   kmigATII_BLDtoSURFACE: ATII.csl
+      kmigATII_BLDtoSURFACE_inflammatory: ATII.csl
+                     kmigDC_BLDtoSURFACE: DC.csl
+                   kmigMP_SURFACEtoLYMPH: M.csl
+                      kmigM_BLDtoSURFACE: M.csl
+                           kmigMonoBlood: Mono.csl
+              kmigMonoBlood_inflammatory: Mono.csl
+                      kmigN_BLDtoSURFACE: N.csl
+         kmigN_BLDtoSURFACE_inflammatory: N.csl
+                            krecATII_BLD: ATII.csl
+                           krecMonoBlood: Mono.csl
+                               krecN_BLD: N.csl
