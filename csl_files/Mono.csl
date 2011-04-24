@@ -7,14 +7,14 @@ RMonoBlood = RrecMonoBlood - RdeathMonoBlood - RmigMonoBlood
 MonoBlood = integ(RMonoBlood,MonoBlood0)
 
 !--------------------------------------------------------------------------
-! MONOCYTE in between blood and tissue (MonoBloodTissue)
-RMonoBloodTissue = RmigMonoBlood - RmigMonoBlood/MonoBlood*MonoBloodTissue ! By dividing by the MonoBlood we get a rate constant
-MonoBloodTissue = integ(RMonoBloodTissue,MonoBloodTissue0)
+! MONOCYTE in between blood and Surface (MonoBloodSurface)
+RMonoBloodSurface = RmigMonoBlood - RmigMonoBlood/MonoBlood*MonoBloodSurface ! By dividing by the MonoBlood we get a rate constant
+MonoBloodSurface = integ(RMonoBloodSurface,MonoBloodSurface0)
 
 !--------------------------------------------------------------------------
-! MONOCYTE in tissue (Mono)
+! MONOCYTE in Surface (Mono)
 RdiffMono = (kdiffMonoDC + kdiffMonoM)*Mono
-RrecMono = RmigMonoBlood/MonoBlood*MonoBloodTissue ! By dividing by the MonoBlood we get a rate constant
+RrecMono = RmigMonoBlood/MonoBlood*MonoBloodSurface ! By dividing by the MonoBlood we get a rate constant
 RdeathMono = kdegMono*Mono
 RinfMono = RPhMono1          ! pathogens being engulfed by non-infected
 RMono = RrecMono - RdiffMono - RdeathMono - RinfMono

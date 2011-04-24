@@ -15,11 +15,8 @@ RmigN_BLDtoSURFACE = (kmigN_BLDtoSURFACE + kmigN_BLDtoSURFACE_inflammatory*GROA_
 N_BLD = integ(-kdegN*N_BLD + krecN_BLD*N0 - RmigN_BLDtoSURFACE,N_BLD0)
 
 ! N_SURFACE
-N_SURFACE = integ(-kdegN*N_SURFACE + krecN_BLD*N0 + RmigN_BLDtoSURFACE,N_LUNG0)
-
-RdeathN = kdegN*N
 RinfN = RPhN1         ! pathogens being engulfed by non-infected
-N = integ(-RdeathN + RrecN - RinfN,N0)
+N_SURFACE = integ(-kdegN*N_SURFACE + krecN_BLD*N0 + RmigN_BLDtoSURFACE - RinfN,N_LUNG0)
 
 !--------------------------------------------------------------------------
 ! Neutrophil infected by pathogen

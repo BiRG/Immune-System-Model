@@ -1,4 +1,4 @@
 !--------------------------------------------------------------------------
 ! GROA
-GROA_LUNG = integ(kgenGROA*MP_LUNG,0)
+GROA_SURFACE = integ(kgenGROA*MP_SURFACE,0)
 
