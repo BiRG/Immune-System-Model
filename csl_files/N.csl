@@ -1,0 +1,38 @@
+! Neutrophils are normally found in the blood stream. During the beginning
+! (acute) phase of inflammation, particularly as a result of bacterial infection, 
+! environmental exposure, and some cancers, neutrophils are one of the 
+! first-responders of inflammatory cells to migrate towards the site of inflammation. 
+! They migrate through the blood vessels, then through interstitial tissue, following 
+! chemical signals such as Interleukin-8 (IL-8) and C5a in a process called chemotaxis. 
+! They are the predominant cells in pus, accounting for its whitish/yellowish appearance.
+
+!--------------------------------------------------------------------------
+! Neutrophils
+! Cell surface receptors allow neutrophils to detect chemical gradients of cytokines
+
+! N_BLD
+RmigN_BLDtoSURFACE = (kmigN_BLDtoSURFACE + kmigN_BLDtoSURFACE_inflammatory*GROA_BLD/(P50_GROA_N + GROA_BLD))*N_BLD
+N_BLD = integ(-kdegN*N_BLD + krecN_BLD*N0 - RmigN_BLDtoSURFACE,N_BLD0)
+
+! N_SURFACE
+RinfN = RPhN1         ! pathogens being engulfed by non-infected
+N_SURFACE = integ(-kdegN*N_SURFACE + krecN_BLD*N0 + RmigN_BLDtoSURFACE - RinfN,N_LUNG0)
+
+!--------------------------------------------------------------------------
+! Neutrophil infected by pathogen
+NP_SURFACE = integ(RinfN - kdegN*NP_SURFACE,0)
+
+!--------------------------------------------------------------------------
+! Pathogen engulfed by Neutrophil (N)
+RPhN1 = 2*P50_rhoP_N*(rhoP/(rhoP + P50_rhoP_N))*kAreaN*N_SURFACE ! Units: P/s ... pathogens engulfed/s by uninfected
+RPhN2 = 2*P50_rhoP_N*(rhoP/(rhoP + P50_rhoP_N))*kAreaN*NP_SURFACE ! Units: P/s ... pathogens engulfed/s by infected
+RPhN = RPhN1 + RPhN2
+RLysN = kLysN*PN ! Destroyed by infected neutrophil
+! Ignore this for now - Paul
+! RRepPN = kRep*PN ! Replicating inside the neutrophil
+! RRelN = RdeathN*PN/N
+! When an infected neutrophil dies, I'm assuming it is engulfed by macrophage (i.e., it does not release P)
+!PN = integ(RPhN - RLysN - RdeathNP*PN/max(NP,1),0) 
+PN = integ(RPhN - RLysN,0) 
+
+
