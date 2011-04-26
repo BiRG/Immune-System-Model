@@ -1,26 +1,25 @@
 !--------------------------------------------------------------------------
 ! Aveolar type II in tissue (ATII)
 
+! CEH modified. Alveolar type II cells assumed to get infected, and die.  May worry about regeneration later, but not now.
+
 ! ATII_BLD
-RmigATII_BLDtoSURFACE = (kmigATII_BLDtoSURFACE + kmigATII_BLDtoSURFACE_inflammatory*GROA_BLD/(P50_GROA_ATII + GROA_BLD))*ATII_BLD
-ATII_BLD = integ(-kdegN*ATII_BLD + krecATII_BLD*N0 - RmigATII_BLDtoSURFACE,ATII_BLD0)
+!RmigATII_BLDtoSURFACE = (kmigATII_BLDtoSURFACE + kmigATII_BLDtoSURFACE_inflammatory*GROA_BLD/(P50_GROA_ATII + GROA_BLD))*ATII_BLD
+!ATII_BLD = integ(-kdegN*ATII_BLD + krecATII_BLD*N0 - RmigATII_BLDtoSURFACE,ATII_BLD0)
 
 ! ATII_SURFACE
-ATII_SURFACE = integ(-kdegN*ATII_SURFACE + krecATII_BLD*N0 + RmigATII_BLDtoSURFACE,ATII_SURFACE0)
-
-RdeathN = kdegN*N
-RinfN = RPhN1         ! pathogens being engulfed by non-infected
-N = integ(-RdeathN + RrecN - RinfN,N0)
+RinfATII1 = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*kPhATII*ATII_SURFACE ! Units: P/s ... pathogens engulfed/s by uninfected
+ATII_SURFACE = integ(-RinfATII1,ATII_SURFACE0)
 
 !--------------------------------------------------------------------------
-! Neutrophil infected by pathogen
-ATIIP_SURFACE = integ(RinfN - kdegN*ATIIP_SURFACE,0)
+! ATII infected by pathogen
+!RdeathATII = kdegATII*PATII/ATIIP_SURFACE   ! seemed like this should include pathogens, not just ATII. But the units are weird this way... - ceh
+RdeathATII = kdegATII*(PATII/ATIIP_SURFACE)*ATIIP_SURFACE   ! how about average P per infected cell, times number of infected cells? - ceh
+ATIIP_SURFACE = integ(RinfATII - RdeathATII,0)
 
 !--------------------------------------------------------------------------
 ! Pathogen engulfed by ATII
-RPhATII1 = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*kPhATII*ATII_SURFACE ! Units: P/s ... pathogens engulfed/s by uninfected
-RPhATII2 = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*kPhATII*ATIIP_SURFACE ! Units: P/s ... pathogens engulfed/s by infected
-RPhN = RPhATII1 + RPhATII2
-RLysATII = kLysATII*PATII ! Destroyed by infected neutrophil
-PATII = integ(RPhN - RLysATII,0) 
+RinfATII2 = MAX_rhoP_ATII*rhoP/(MAX_rhoP_ATII/2 + rhoP)*kPhATII*ATIIP_SURFACE ! Units: P/s ... pathogens engulfed/s by infected
+RinfATII = RinfATII1 + RinfATII2
+PATII = integ(RinfATII + kRep*PATII,0) 
 

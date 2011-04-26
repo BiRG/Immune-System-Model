@@ -35,20 +35,22 @@ constant P50_IFNG_M = 100
 ! Dentritic Cells
 DC_SURFACE0 = 200533.58306804 + 227996.8762
 constant kAreaDC_SURFACE = 4.2e-5
-kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 							! must be in steady state
-kmigDC_BLDtoSURFACE = 0.1*kdiffMonoDC*Mono0/DC0     ! Must be balanced in steady state
-kmigDC_SURFACEtoLYMPH = 0.1*kdiffMonoDC*Mono0/DC0
+! ceh - why the 0.9?
+kdegDC = 0.9*kdiffMonoDC*Mono0/DC0 		! must be in steady state
+kmigDC_BLDtoSURFACE = 0.1*kdiffMonoDC*Mono0/DC_SURFACE0     ! Must be balanced in steady state
+kmigDC_SURFACEtoLYMPH = 0.1*kdiffMonoDC*Mono0/DC_SURFACE0
 kmigDCA_SURFACEtoLYMPH = 30*kmigDC_SURFACEtoLYMPH
 constant P50_rhoP_DC_SURFACE = 1500
 
 ! ATII
-ATII_BLD0 = 2.81E+06
+!ATII_BLD0 = 2.81E+06
 ATII_SURFACE0 = 2.81E+06
-constant kLysATII = 0
+!constant kLysATII = 0
 constant kPhATII = 0.3e-13
-constant kmigATII_BLDtoSURFACE = 0
-constant kmigATII_BLDtoSURFACE_inflammatory = 0
-krecATII_BLD = 0
+!constant kmigATII_BLDtoSURFACE = 0
+!constant kmigATII_BLDtoSURFACE_inflammatory = 0
+constant MAX_rhop_ATII = 1e3
+!krecATII_BLD = 0
 
 ! Neutrophil
 N0 = 6.26E+05
@@ -106,7 +108,7 @@ constant kdegNK_anti_inflammatory = 0.04
 
  		DERIVATIVE
 
-INCLUDE 'TBL_Hall.csl'
+INCLUDE 'csl_files/TBL_Hall.csl'
 
 rhoP = P_experimental/LuSA  ! surface density of pathogen (num/cm**2)	
 
@@ -119,20 +121,20 @@ PperN = PN/N
 ! Cytokines
 !--------------------------------------------------------------------------
 
-include 'MCP3.csl'
-include 'GROA.csl'
-include 'IL18.csl'
-include 'IL1B.csl'
+include 'csl_files/MCP3.csl'
+include 'csl_files/GROA.csl'
+include 'csl_files/IL18.csl'
+include 'csl_files/IL1B.csl'
 
 !--------------------------------------------------------------------------
 ! Cells
 !--------------------------------------------------------------------------
 
-include 'ATII.csl'
-include 'DC.csl'
-INCLUDE 'M.csl'
-INCLUDE 'Mono.csl'
-INCLUDE 'N.csl'
+include 'csl_files/ATII.csl'
+include 'csl_files/DC.csl'
+INCLUDE 'csl_files/M.csl'
+INCLUDE 'csl_files/Mono.csl'
+INCLUDE 'csl_files/N.csl'
 
 !--------------------------------------------------------------------------
 ! Natural killer cells
